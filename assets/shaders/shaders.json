@@ -1,0 +1,28 @@
+{
+	"Color2D" : {
+		"vertex" : "color2d.glslv",
+		"fragment" : "color2d.glslf",
+		"attributes" : [
+			{"variable" : "vPosition", "binding": "Position"},
+			{"variable" : "vColor", "binding": "Color"}
+		],
+		"uniforms" : [
+			{"variable" : "projectionMatrix", "binding": "Transformation.Projection"},
+			{"variable" : "modelMatrix", "binding": "Transformation.Model"},
+			{"variable" : "viewMatrix", "binding": "Transformation.View"}
+		]
+	},
+	"Color3D" : {
+		"vertex" : "color3d.glslv",
+		"fragment" : "color3d.glslf",
+		"attributes" : [
+			{"variable" : "vPosition", "binding": "Position"},
+			{"variable" : "vColor", "binding": "Color"}
+		],
+		"uniforms" : [
+			{"variable" : "projectionMatrix", "binding": "Transformation.Projection"},
+			{"variable" : "modelMatrix", "binding": "Transformation.Model"},
+			{"variable" : "viewMatrix", "binding": "Transformation.View"}
+		]
+	}
+}

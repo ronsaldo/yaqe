@@ -1,0 +1,22 @@
+{
+  "name": "Yaqe",
+  "description": "Yet Another Quake Editor",
+  "main": "index.js",
+  "authors": [
+    "Ronie Salgado"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0"
+  }
+}

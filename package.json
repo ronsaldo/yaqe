@@ -1,0 +1,19 @@
+{
+  "name": "Yaqe",
+  "version": "0.0.0",
+  "description": "Yet Another Quake Editor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ronie Salgado",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "~3.9.0",
+    "gulp-typescript": "~2.9.2",
+    "gulp-nodemon": "~2.0.4",
+    "gulp-sourcemaps": "~1.6.0",
+    "gulp-bower": "0.0.10"
+  },
+  "dependencies": {}
+}
