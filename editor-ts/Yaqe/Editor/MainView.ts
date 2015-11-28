@@ -23,6 +23,7 @@ module Yaqe.Editor {
         constructor(canvas: HTMLCanvasElement) {
             // Create the rendering context.
             this.canvas = canvas;
+            
             this.gl = <WebGLRenderingContext>canvas.getContext("webgl");
             if (!this.gl)
                 this.gl = <WebGLRenderingContext>canvas.getContext("experimental-webgl");
@@ -34,9 +35,11 @@ module Yaqe.Editor {
             this.loadShaders(() => {
                 this.initializeScene();
                 this.createViews();
-
-                this.render();
             });
+        }
+        
+        mainLoopIteration(currentTime) {
+            this.render();
         }
         
         initializeExtensions() {
@@ -51,14 +54,28 @@ module Yaqe.Editor {
         
         createViews() {
             this.views = [new View(this.stateTracker), new View(this.stateTracker), new View(this.stateTracker), new View(this.stateTracker)]
-            this.updateViewLayout()
+            this.updateCanvasSize();
         }
         
-        canvasResized() {
+        checkCanvasSize() {
+            var parentWidth = this.canvas.parentElement.clientWidth;
+            var parentHeight = this.canvas.parentElement.clientHeight;
+            
+            if(this.canvas.width == parentWidth &&
+                this.canvas.height == parentHeight)
+                return;
+                
+            this.updateCanvasSize();
+        }
+
+        updateCanvasSize() {
+            var parentWidth = this.canvas.parentElement.clientWidth;
+            var parentHeight = this.canvas.parentElement.clientHeight;
+            this.canvas.width = parentWidth;
+            this.canvas.height = parentHeight;
             this.updateViewLayout();
-            this.render();
         }
-        
+       
         updateViewLayout() {
             var width = this.canvas.width;
             var height = this.canvas.height;
@@ -165,6 +182,8 @@ module Yaqe.Editor {
         }
         
         render() {
+            this.checkCanvasSize();
+            
             var gl = this.gl;
 
             gl.viewport(0, 0, this.canvas.width, this.canvas.height);

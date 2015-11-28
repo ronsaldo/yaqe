@@ -3,10 +3,3 @@ html, body {
   height: 100%;
   margin: 0px;
 }
-
-
-#mainCanvas {
-  position: absolute; 
-  top: 0px;
-  left: 0px;
-} 

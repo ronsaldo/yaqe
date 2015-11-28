@@ -10,9 +10,20 @@ module Yaqe.Editor {
             this.mainView = new MainView(mainCanvas);
         }
         
-        canvasResized() {
-            this.mainView.canvasResized();
+        mainLoopIteration(currentTime) {
+            this.mainView.mainLoopIteration(currentTime)
         }
         
+        enterMainLoop() {
+            var self = this;
+            var mainLoopBody = (currentTime) => {
+                this.mainLoopIteration(currentTime);
+                window.requestAnimationFrame(mainLoopBody)
+            }
+
+            window.requestAnimationFrame(mainLoopBody);
+        }
+
+
     }
 }
