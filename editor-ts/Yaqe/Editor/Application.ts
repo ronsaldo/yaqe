@@ -10,13 +10,12 @@ module Yaqe.Editor {
             this.mainView = new MainView(mainCanvas);
         }
         
-        mainLoopIteration(currentTime) {
+        mainLoopIteration(currentTime : number) {
             this.mainView.mainLoopIteration(currentTime)
         }
         
         enterMainLoop() {
-            var self = this;
-            var mainLoopBody = (currentTime) => {
+            var mainLoopBody = (currentTime : number) => {
                 this.mainLoopIteration(currentTime);
                 window.requestAnimationFrame(mainLoopBody)
             }

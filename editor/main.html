@@ -10,7 +10,7 @@
 		<script src="lib/webcomponentsjs/webcomponents-lite.min.js"></script>
 
 		<link rel="import" href="lib/iron-flex-layout/classes/iron-flex-layout.html">
-		<link rel="import" href="lib/iron-icons/iron-icons.html">
+		<link rel="import" href="assets/icons/tango-set.html">
 		
 		<link rel="import" href="lib/paper-toolbar/paper-toolbar.html">
 		<link rel="import" href="lib/paper-drawer-panel/paper-drawer-panel.html">
@@ -23,8 +23,9 @@
 	<body class="fullbleed vertical layout">
 		<div>
 			<paper-toolbar>
-				<paper-icon-button icon="folder-open" on-tap="openAction">Open</paper-icon-button>
-				<paper-icon-button icon="save" on-tap="saveAction">Save</paper-icon-button>
+				<paper-icon-button icon="tango:document-new" on-tap="new">New</paper-icon-button>
+				<paper-icon-button icon="tango:document-open" on-tap="openAction">Open</paper-icon-button>
+				<paper-icon-button icon="tango:document-save" on-tap="saveAction">Save</paper-icon-button>
 			</paper-toolbar>
 		</div>
 
@@ -32,6 +33,9 @@
 			<div class="flex">
 				<canvas id="mainCanvas">
 				</canvas>
+			</div>
+			<div>
+				Some tools
 			</div>
 		</div>
 

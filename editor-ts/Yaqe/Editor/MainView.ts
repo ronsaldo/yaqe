@@ -38,7 +38,8 @@ module Yaqe.Editor {
             });
         }
         
-        mainLoopIteration(currentTime) {
+        mainLoopIteration(currentTime : number) {
+            this.updateTime(currentTime);
             this.render();
         }
         
@@ -68,6 +69,10 @@ module Yaqe.Editor {
             this.updateCanvasSize();
         }
 
+        updateTime(currentTime : number) {
+            
+        }
+        
         updateCanvasSize() {
             var parentWidth = this.canvas.parentElement.clientWidth;
             var parentHeight = this.canvas.parentElement.clientHeight;
@@ -147,8 +152,8 @@ module Yaqe.Editor {
             
             gl.linkProgram(program);
             var status = gl.getProgramParameter(program, gl.LINK_STATUS);
-            var message = "Program linking of " + name + ":\n" + gl.getProgramInfoLog(program);
-            console.log(message);
+            var message = "Program linking of " + name + ":\n" + gl.getProgramInfoLog(program) + '\n';
+            process.stdout.write(message);
             if(!status)
                 throw message;
                 
@@ -161,8 +166,8 @@ module Yaqe.Editor {
             gl.shaderSource(shader, source);
             gl.compileShader(shader);
             var status = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-            var message = "Shader compilation of '" + filename + "':\n" + gl.getShaderInfoLog(shader);
-            console.log(message)
+            var message = "Shader compilation of '" + filename + "':\n" + gl.getShaderInfoLog(shader) + '\n';
+            process.stdout.write(message)
             if(!status) {
                  throw message
             }
