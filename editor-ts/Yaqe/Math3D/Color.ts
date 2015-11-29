@@ -23,6 +23,15 @@ module Yaqe.Math3D
 			return new Color(0.0, 0.0, 0.0, 1.0);
 		}
 
+		static get Gray() {
+			return new Color(0.5, 0.5, 0.5, 1.0);
+		}
+		
+		static get DarkGray() {
+			return new Color(0.2, 0.2, 0.2, 1.0);
+		}
+
+
 		static makeRandom()
 		{
 			return Color.Green;

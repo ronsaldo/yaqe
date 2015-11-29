@@ -80,7 +80,6 @@ module Yaqe.Editor {
                 
             // Perspective
             this.views[1]
-                .setFront()
                 .setPerspective()
                 .setSolidMode();
                 

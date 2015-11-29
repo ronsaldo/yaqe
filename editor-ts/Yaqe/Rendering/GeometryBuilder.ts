@@ -21,6 +21,7 @@ module Yaqe.Rendering {
 		private indices: number[];
 		private submeshes: SubMesh[];
 		private baseIndex: number;
+		color : Color;
 		
 		constructor(vertexType: any) {
 			this.vertices = []
@@ -28,6 +29,7 @@ module Yaqe.Rendering {
 			this.submeshes = []
 			this.baseIndex = 0;
 			this.vertexType = vertexType;
+			this.color = null;
 		}
 		
 		addIndex(index: number) {
@@ -45,6 +47,11 @@ module Yaqe.Rendering {
 				return null;
 				
 			return this.submeshes[this.submeshes.length - 1]
+		}
+		
+		setColor(color: Color) {
+			this.color = color;
+			return this;
 		}
 
 		beginPoints() {
@@ -95,6 +102,8 @@ module Yaqe.Rendering {
 		{
 			var vertex = new this.vertexType();
 			vertex.position = position;
+			if(this.color != null)
+				vertex.color = this.color;
 			
 			this.addVertex(vertex);
 			return this;
@@ -114,7 +123,9 @@ module Yaqe.Rendering {
 		{
 			var vertex = new this.vertexType();
 			vertex.position = position;
-			
+			if(this.color != null)
+				vertex.color = this.color;
+
 			this.addVertex(vertex);
 			return this;
 		}
@@ -159,6 +170,39 @@ module Yaqe.Rendering {
 			vertex.texcoord = texcoord;
 			
 			this.addVertex(vertex);
+			return this;
+		}
+		
+		add3DLineGrid(width: number, height: number, subdivisions: number)
+		{
+			// Some parameters for the vertices
+			let dx = width / (subdivisions - 1);
+			let dy = height / (subdivisions - 1);
+			let px = width * 0.5;
+			let py = height * 0.5;
+			let nx = -px;
+			let ny = -py;
+			
+			// Vertical lines
+			this.beginLines();
+			let x = nx;
+			for(let i = 0; i < subdivisions; ++i) {
+				this.addP3(new Vector3(x, 0.0, ny));
+				this.addP3(new Vector3(x, 0.0, py));
+				this.addI12(i*2, i*2+1);
+				x += dx;
+			}
+
+			// Vertical lines
+			this.beginLines();
+			let y = ny;
+			for(let i = 0; i < subdivisions; ++i) {
+				this.addP3(new Vector3(nx, 0.0, y));
+				this.addP3(new Vector3(px, 0.0, y));
+				this.addI12(i*2, i*2+1);
+				y += dy;
+			}
+			
 			return this;
 		}
 		

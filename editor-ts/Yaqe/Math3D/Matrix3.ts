@@ -42,6 +42,15 @@ module Yaqe.Math3D
 			]);
 		}
 		
+		static scaleUniform(scale: number)
+		{
+			return new Matrix3([
+				scale, 0.0, 0.0,
+				0.0, scale, 0.0,
+				0.0, 0.0, scale
+			]);
+		}
+		
 		static xRotation(angle : number)
 		{
 			let c = Math.cos(angle);

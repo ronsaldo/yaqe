@@ -31,6 +31,8 @@ module Yaqe.Editor {
         camera: Camera;
         
         renderMode: ViewRenderMode;
+        gridTransform: Matrix3;
+        gridCameraDirection: Vector3;
         
         private mainView : MainView;
         private renderable: Rendering.Renderable;
@@ -45,6 +47,8 @@ module Yaqe.Editor {
             this.camera.position = new Vector3(0.0, 0.5, 2.0);
             this.isOrthographic_ = true;
             this.renderMode = ViewRenderMode.Wireframe;
+            this.gridTransform = Matrix3.identity();  
+            this.gridCameraDirection = new Vector3(1.0, 0.0, 1.0);
         }
 
         get currentMap() {
@@ -52,14 +56,23 @@ module Yaqe.Editor {
         }   
         
         setTop() {
+            this.camera.orientation = Matrix3.xRotation(-Math.PI/2);
+            this.gridTransform = Matrix3.identity()  
+            this.gridCameraDirection = new Vector3(1.0, 0.0, 1.0);
             return this;
         }
         
         setFront() {
+            this.camera.orientation = Matrix3.identity();
+            this.gridTransform = Matrix3.xRotation(Math.PI / 2);  
+            this.gridCameraDirection = new Vector3(1.0, 1.0, 0.0);
             return this;
         }
         
         setSide() {
+            this.camera.orientation = Matrix3.yRotation(Math.PI/2);
+            this.gridTransform = Matrix3.yRotation(Math.PI/2).mul(Matrix3.xRotation(Math.PI / 2));  
+            this.gridCameraDirection = new Vector3(0.0, 1.0, 1.0);
             return this;
         }
         

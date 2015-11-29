@@ -43,6 +43,14 @@ module Yaqe.Math3D
             return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z);
         }
 
+        mulElements(other: Vector3) {
+            return new Vector3(this.x*other.x, this.y*other.y, this.z*other.z);
+        }
+
+        divElements(other: Vector3) {
+            return new Vector3(this.x/other.x, this.y/other.y, this.z/other.z);
+        }
+        
         mulScalar(scalar: number) {
             return new Vector3(this.x*scalar, this.y*scalar, this.z*scalar);
         }
