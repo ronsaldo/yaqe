@@ -22,14 +22,13 @@ module Yaqe.Rendering {
 			super(gl);
 			
 			this.program = program;
-			var uniformBindings = {}
-			this.uniformBindings = uniformBindings;
+			this.uniformBindings = {};
 			
 			uniforms.forEach((uniformBinding: Object) => {
-				var varName = uniformBinding["variable"]
-				var binding = uniformBinding["binding"]
-				var location = gl.getUniformLocation(program, varName);
-				uniformBindings[binding] = location;
+				let varName = uniformBinding["variable"]
+				let binding = uniformBinding["binding"]
+				let location = gl.getUniformLocation(program, varName);
+				this.uniformBindings[binding] = location;
 			});
 		}
 		
@@ -38,34 +37,32 @@ module Yaqe.Rendering {
 		}
 		
 		getUniformBinding(binding: string) {
-			if(binding in this.uniformBindings[binding])
-				return this.uniformBindings[binding];
-			return -1;
+			return this.uniformBindings[binding];
 		}
 
 		setUniformVector2(binding: string, vector: Vector2) {
-			var location = this.getUniformBinding(binding);
+			let location = this.getUniformBinding(binding);
 			this.gl.uniform2f(location, vector.x, vector.y);
 		}
 
 		setUniformVector3(binding: string, vector: Vector3) {
-			var location = this.getUniformBinding(binding);
+			let location = this.getUniformBinding(binding);
 			this.gl.uniform3f(location, vector.x, vector.y, vector.z);
 		}
 		
 		setUniformVector4(binding: string, vector: Vector4) {
-			var location = this.getUniformBinding(binding);
+			let location = this.getUniformBinding(binding);
 			this.gl.uniform4f(location, vector.x, vector.y, vector.z, vector.w);
 		}
 		
 		setUniformMatrix3(binding: string, matrix: Matrix3) {
-			var location = this.getUniformBinding(binding);
-			this.gl.uniformMatrix3fv(location, true, matrix.values);
+			let location = this.getUniformBinding(binding);
+			this.gl.uniformMatrix3fv(location, false, matrix.transposed().values);
 		}
 		
 		setUniformMatrix4(binding: string, matrix: Matrix4) {
-			var location = this.getUniformBinding(binding);
-			this.gl.uniformMatrix4fv(location, true, matrix.values);
+			let location = this.getUniformBinding(binding);
+			this.gl.uniformMatrix4fv(location, false, matrix.transposed().values);
 		}
 	}
 }

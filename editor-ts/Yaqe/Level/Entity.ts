@@ -3,6 +3,7 @@
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Math3D/Matrix3.ts'/>
 ///<reference path='../Math3D/Plane.ts'/>
+///<reference path='../Rendering/Vertex.ts'/>
 ///<reference path='../Rendering/GeometryBuilder.ts'/>
 ///<reference path='../Rendering/Renderable.ts'/>
 ///<reference path='../Rendering/StateTracker.ts'/>
@@ -15,8 +16,8 @@ module Yaqe.Level {
 	import Plane = Math3D.Plane;
 	import Matrix3 = Math3D.Matrix3;
 	import GeometryBuilder = Rendering.GeometryBuilder;
-	import MeshRenderable = Rendering.MeshRenderable;
 	import StateTracker = Rendering.StateTracker;
+	import MeshRenderable = Rendering.MeshRenderable;
 	
 	/**
 	 * An entity in the level.
@@ -52,30 +53,42 @@ module Yaqe.Level {
 			this.texturedModelMesh = null;
 		}
 
-		buildWireModel() {
+		private buildWireModel(stateTracker: StateTracker) {
+			let builder = new GeometryBuilder<Rendering.StandardVertex3D> (Rendering.StandardVertex3D);
+			for(let brush of this.brushes) {
+				brush.buildWireModel(builder);
+			}
+			
+			this.wireModelMesh = builder.createMeshRenderable(stateTracker.gl);
 		}
 		
-		buildSolidModel() {
+		private buildSolidModel(stateTracker: StateTracker) {
+			let builder = new GeometryBuilder<Rendering.StandardVertex3D> (Rendering.StandardVertex3D);
+			for(let brush of this.brushes) {
+				brush.buildSolidModel(builder);
+			}
+			
+			this.solidModelMesh = builder.createMeshRenderable(stateTracker.gl);
 		}
 
-		buildTexturedModel() {
+		private buildTexturedModel(stateTracker: StateTracker) {
 		}
 		
-		getWireModel() {
+		getWireModel(stateTracker: StateTracker) {
 			if(!this.wireModelMesh)
-				this.buildWireModel();
+				this.buildWireModel(stateTracker);
 			return this.wireModelMesh;
 		}
 		
-		getSolidModel() {
+		getSolidModel(stateTracker: StateTracker) {
 			if(!this.solidModelMesh)
-				this.buildSolidModel();
+				this.buildSolidModel(stateTracker);
 			return this.solidModelMesh;
 		}
 		
-		getTexturedModel() {
+		getTexturedModel(stateTracker: StateTracker) {
 			if(!this.texturedModelMesh)
-				this.buildTexturedModel();
+				this.buildTexturedModel(stateTracker);
 			return this.texturedModelMesh;
 		}
 	}

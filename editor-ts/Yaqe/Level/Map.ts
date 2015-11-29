@@ -10,20 +10,20 @@ module Yaqe.Level {
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
 	import Plane = Math3D.Plane;
-		
+	
 	/**
 	 * A map that contains entities.
 	 */
 	export class Map
 	{
-		entities : Array<Entity>;
+		entities : Entity[];
 		
-		constructor(entities : Array<Entity> = [])
+		constructor(entities : Entity[] = [])
 		{
 			this.entities = entities
 		}
 		
-		mapEntity()
+		get mapEntity() : Entity
 		{
 			return this.entities[0];
 		}

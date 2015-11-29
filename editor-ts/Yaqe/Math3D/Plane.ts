@@ -37,8 +37,8 @@ module Yaqe.Math3D {
             
             // Build the equation system.
             let x1 = n1.x; let y1 = n1.y; let z1= n1.z; // d1
-            let x2 = n2.x; let y2 = n2.y; let z2= n1.z; // d2
-            let x3 = n3.x; let y3 = n3.y; let z3= n1.z; // d3
+            let x2 = n2.x; let y2 = n2.y; let z2= n2.z; // d2
+            let x3 = n3.x; let y3 = n3.y; let z3= n3.z; // d3
             
             // Compute the denominator
             let den = Matrix3.determinantOfArray([

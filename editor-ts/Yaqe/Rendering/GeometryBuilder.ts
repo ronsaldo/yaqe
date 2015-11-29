@@ -46,13 +46,17 @@ module Yaqe.Rendering {
 				
 			return this.submeshes[this.submeshes.length - 1]
 		}
-		
-		beginTriangles() {
-			return this.beginPrimitives(PrimitiveType.Triangles);
-		}
 
 		beginPoints() {
 			return this.beginPrimitives(PrimitiveType.Point);
+		}
+
+		beginLines() {
+			return this.beginPrimitives(PrimitiveType.Lines);
+		}
+		
+		beginTriangles() {
+			return this.beginPrimitives(PrimitiveType.Triangles);
 		}
 		
 		finishLastSubmesh() {
@@ -72,6 +76,12 @@ module Yaqe.Rendering {
 			
 			this.baseIndex = this.vertices.length;
 			return this;
+		}
+
+		addI12(i1: number, i2: number) {
+			return this
+				.addIndex(i1)
+				.addIndex(i2);
 		}
 		
 		addI123(i1: number, i2: number, i3: number) {
@@ -174,7 +184,7 @@ module Yaqe.Rendering {
 			var bufferSize = 4 * this.indices.length;
 			var binaryBuffer = new BinaryArrayBuffer(bufferSize);
 			for(var i = 0; i < this.indices.length; ++i)
-				binaryBuffer.writeUInt16(this.indices[i]);
+				binaryBuffer.writeUInt32(this.indices[i]);
 				
 			return binaryBuffer;
 		}

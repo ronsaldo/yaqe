@@ -86,5 +86,9 @@ module Yaqe.Math3D
         closeTo(o: Vector3) {
             return this.x.closeTo(o.x) && this.y.closeTo(o.y) && this.z.closeTo(o.z);
         }
+        
+        toString() {
+            return '{x: ' + this.x + ', y: ' + this.y + ', z: ' + this.z + '}';
+        }
     }
 }

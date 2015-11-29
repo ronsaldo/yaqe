@@ -25,7 +25,7 @@ module Yaqe.Math3D
 
 		static makeRandom()
 		{
-			return Color.Red;
+			return Color.Green;
 		}
 		
 		get r() {

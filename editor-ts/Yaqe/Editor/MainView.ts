@@ -1,12 +1,14 @@
 ﻿///<reference path='./View.ts'/>
+///<reference path="./MapRenderer.ts" />
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Rendering/StateTracker.ts'/>
 ///<reference path='../Rendering/GeometryBuilder.ts'/>
 ///<reference path='../Rendering/Vertex.ts'/>
 ///<reference path='../Rendering/Renderable.ts'/>
-///<reference path="../typings.d.ts" />
 ///<reference path="../Rendering/GpuProgram.ts" />
 ///<reference path="../Level/Map.ts" />
+///<reference path="../Level/Brush.ts" />
+///<reference path="../typings.d.ts" />
 
 module Yaqe.Editor {
     import StateTracker = Rendering.StateTracker;
@@ -14,6 +16,7 @@ module Yaqe.Editor {
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
     import Map = Level.Map;
+    import Brush = Level.Brush;
     
     export class MainView {
         canvas: HTMLCanvasElement;
@@ -22,8 +25,13 @@ module Yaqe.Editor {
         currentMap : Map;
         private views: View[];
         private renderable: Rendering.Renderable;
+        private mapRenderer: MapRenderer;
 
         constructor(canvas: HTMLCanvasElement) {
+            // Create an empty map.
+            this.currentMap = Map.createEmpty();
+            this.currentMap.mapEntity.addBrush(Brush.createPrism(new Vector3(1.0, 1.0, 1.0))),
+            
             // Create the rendering context.
             this.canvas = canvas;
             
@@ -34,10 +42,15 @@ module Yaqe.Editor {
                 
             // Create the state tracker.
             this.stateTracker = new StateTracker(this.gl);
-            
+
+            // Load the shader            
             this.loadShaders(() => {
-                this.initializeScene();
+                
+                // Create the views
                 this.createViews();
+                
+                // Create the map renderer.
+                this.mapRenderer = new MapRenderer(this.stateTracker)
             });
         }
         
@@ -58,10 +71,31 @@ module Yaqe.Editor {
         
         createViews() {
             this.views = [new View(this, this.stateTracker), new View(this, this.stateTracker), new View(this, this.stateTracker), new View(this, this.stateTracker)]
-            this.views[0].setTop().setOrthographic();
-            this.views[1].setFront().setPerspective();
-            this.views[2].setFront().setOrthographic();
-            this.views[3].setSide().setOrthographic();
+            
+            // Top view
+            this.views[0]
+                .setTop()
+                .setOrthographic()
+                .setWireMode();
+                
+            // Perspective
+            this.views[1]
+                .setFront()
+                .setPerspective()
+                .setSolidMode();
+                
+            // Front view
+            this.views[2]
+                .setFront()
+                .setOrthographic()
+                .setWireMode();
+                
+            // Side view
+            this.views[3]
+                .setSide()
+                .setOrthographic()
+                .setWireMode();
+                
             this.updateCanvasSize();
         }
         
@@ -195,23 +229,9 @@ module Yaqe.Editor {
         
         render() {
             this.checkCanvasSize();
-            
-            var gl = this.gl;
-
-            gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-            gl.scissor(0, 0, this.canvas.width, this.canvas.height);
-            gl.enable(gl.SCISSOR_TEST);
-            
-            gl.clearColor(0.8, 0.8, 0.8, 1);
-            gl.clearDepth(1.0);
-            gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            gl.enable(gl.CULL_FACE);
-            gl.enable(gl.DEPTH_TEST);
-            
-            for(var i = 0; i < this.views.length; ++i) {
-                var view = this.views[i];
-                view.render();
-            }
+            this.stateTracker.screenWidth = this.canvas.width;
+            this.stateTracker.screenHeight = this.canvas.height;
+            this.mapRenderer.renderViews(this.views);
         }
     }
 }

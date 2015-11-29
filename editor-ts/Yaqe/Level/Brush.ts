@@ -2,14 +2,19 @@
 ///<reference path='../Math3D/Vector2.ts'/>
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Math3D/Plane.ts'/>
+///<reference path='../Rendering/GeometryBuilder.ts'/>
+///<reference path='../Rendering/StateTracker.ts'/>
 ///<reference path='./BrushFace.ts'/>
+///<reference path="../typings.d.ts" />
 
 module Yaqe.Level {
     import Vector3 = Math3D.Vector3;
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
 	import Plane = Math3D.Plane;
-	
+	import GeometryBuilder = Rendering.GeometryBuilder;
+	import StateTracker = Rendering.StateTracker;
+
 	/**
 	 * A convex brush.
 	 */
@@ -31,9 +36,24 @@ module Yaqe.Level {
 			if(this.faces.length > 0)
 				this.computePolygons();
 		}
+		
+		static createPrism(extent: Vector3) {
+			let hw = extent.x / 2.0;
+			let hh = extent.y / 2.0;
+			let hd = extent.z / 2.0;
+			
+			return new Brush([
+				new BrushFace(new Plane(new Vector3(-1, 0, 0), hw)),
+				new BrushFace(new Plane(new Vector3(1, 0, 0), hw)),
+				new BrushFace(new Plane(new Vector3(0, -1, 0), hh)),
+				new BrushFace(new Plane(new Vector3(0, 1, 0), hh)),
+				new BrushFace(new Plane(new Vector3(0, 0, -1), hd)),
+				new BrushFace(new Plane(new Vector3(0, 0, 1), hd)),
+			]);
+		}
 
 		clearGeometry() {
-			this.vertices = []
+			this.vertices = [];
 			for(let face of this.faces)
 				face.clearGeometry();
 		}
@@ -105,6 +125,27 @@ module Yaqe.Level {
 			first.addIndex(index);
 			second.addIndex(index);
 			third.addIndex(index);
+		}
+		
+		get currentDrawColor() {
+			return this.color;
+		}
+		
+		buildWireModel(builder: GeometryBuilder<Rendering.StandardVertex3D>) {
+			builder.beginLines();
+			let color = this.currentDrawColor;
+			for(let vertex of this.vertices) {
+				builder.addP3C(vertex, color);
+			}
+			
+			for(let edge of this.edges) {
+				builder.addI12(edge[0], edge[1]);
+			}
+		}
+		
+		buildSolidModel(builder: GeometryBuilder<Rendering.StandardVertex3D>) {
+			for(let face of this.faces)
+				face.buildSolidModel(builder);
 		}
 	}
 }

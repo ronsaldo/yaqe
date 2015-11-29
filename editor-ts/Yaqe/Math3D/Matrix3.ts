@@ -11,7 +11,7 @@ module Yaqe.Math3D
 		constructor(values : Array<number>)
 		{
 			this.assert(values.length == 9, "Matrix3 requires 9 values");
-			
+
 			this.values = values;
 		}
 		
@@ -170,9 +170,7 @@ module Yaqe.Math3D
 			 * m21 m22 m23 | m21 m22
 			 * m31 m32 m33 | m31 m32
 			 */
-			
-			return
-				this.m11*this.m22*this.m33 +
+			return this.m11*this.m22*this.m33 +
 				this.m12*this.m23*this.m31 +
 				this.m13*this.m21*this.m32 -
 				this.m31*this.m22*this.m13 -
@@ -181,7 +179,7 @@ module Yaqe.Math3D
 		}
 		
 		static determinantOfArray(values: number[]) {
-			return new Matrix3(values).determinant();
+			return (new Matrix3(values)).determinant();
 		}
 		
 		mul(o: Matrix3) : Matrix3

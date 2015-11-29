@@ -24,7 +24,5 @@ module Yaqe.Rendering {
 			
 			this.projectionMatrix = Matrix4.orthographicProjection(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 		}
-		
-		
 	}
 }

@@ -1,9 +1,11 @@
+///<reference path='../Math3D/Matrix4.ts'/>
 ///<reference path='./GpuBuffer.ts'/>
 ///<reference path='./GpuProgram.ts'/>
 ///<reference path='./Camera.ts'/>
 
 module Yaqe.Rendering {
-
+	import Matrix4 = Math3D.Matrix4;
+	
 	export class StateTracker {
 		static MaxVertexLocations = 16;
 		static AttributeBindings = {
@@ -14,16 +16,26 @@ module Yaqe.Rendering {
 		}
 		
 		gl: WebGLRenderingContext;
+		screenWidth: number;
+		screenHeight: number;
+		
 		private enabledVertexLocations: boolean[];
 		private programs: Object;
 		private currentProgram: GpuProgram;
 		private currentCamera: Camera;
+		
+		private modelMatrix_: Matrix4;
+		private viewMatrix_: Matrix4;
+		private projectionMatrix_: Matrix4;
 		
 		constructor(gl: WebGLRenderingContext) {
 			this.gl = gl;
 			this.enabledVertexLocations = new Array(StateTracker.MaxVertexLocations);
 			this.programs = {}
 			this.currentProgram = null;
+			this.modelMatrix_ = Matrix4.identity();
+			this.viewMatrix_ = Matrix4.identity();
+			this.projectionMatrix_ = Matrix4.identity();
 			for(var i = 0; i < StateTracker.MaxVertexLocations; ++i)
 				this.enabledVertexLocations[i] = false;
 		}
@@ -68,17 +80,58 @@ module Yaqe.Rendering {
 				
 			this.currentProgram = program;
 			this.currentProgram.use();
-			this.setCameraUniforms();
+			this.setTransformationUniforms();
 		}
 		
 		useCamera(camera : Camera) {
 			this.currentCamera = camera;
-			this.setCameraUniforms();
+			
+			if(camera) {
+				this.viewMatrix = camera.viewMatrix;
+				this.projectionMatrix = camera.projectionMatrix;
+			}
 		}
 		
-		private setCameraUniforms() {
-			if(!this.currentCamera || !this.currentProgram)
+		get modelMatrix() {
+			return this.modelMatrix_;
+		}
+		
+		set modelMatrix(matrix: Matrix4) {
+			this.modelMatrix_ = matrix;
+			
+			if(this.currentProgram)
+				this.currentProgram.setUniformMatrix4("Transformation.Model", this.modelMatrix_);
+		}
+		
+		get viewMatrix() {
+			return this.viewMatrix_;
+		}
+		
+		set viewMatrix(matrix: Matrix4) {
+			this.viewMatrix_ = matrix;
+			
+			if(this.currentProgram)
+				this.currentProgram.setUniformMatrix4("Transformation.View", this.viewMatrix_);
+		}
+		
+		get projectionMatrix() {
+			return this.projectionMatrix_;
+		}
+		
+		set projectionMatrix(matrix: Matrix4) {
+			this.projectionMatrix_ = matrix;
+			
+			if(this.currentProgram)
+				this.currentProgram.setUniformMatrix4("Transformation.Projection", this.projectionMatrix_);
+		}
+		
+		private setTransformationUniforms() {
+			if(!this.currentProgram)
 				return;
+				
+			this.currentProgram.setUniformMatrix4("Transformation.Model", this.modelMatrix);
+			this.currentProgram.setUniformMatrix4("Transformation.View", this.viewMatrix);
+			this.currentProgram.setUniformMatrix4("Transformation.Projection", this.projectionMatrix);
 		}
 	}
 }
