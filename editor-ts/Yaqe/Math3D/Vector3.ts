@@ -17,8 +17,22 @@ module Yaqe.Math3D
             this.z = z;
         }
         
+        static zeros()
+        {
+            return new Vector3(0.0, 0.0, 0.0);
+        }
+        
+        static ones()
+        {
+            return new Vector3(1.0, 1.0, 1.0); 
+        }
+        
         asVector4() {
             return new Vector4(this.x, this.y, this.z, 0.0);
+        }
+        
+        negated() {
+            return new Vector3(-this.x, -this.y, -this.z);
         }
 
         add(other: Vector3) {
@@ -48,6 +62,13 @@ module Yaqe.Math3D
         dot(other: Vector3) {
             return this.x*other.x + this.y*other.y + this.z*other.z;
         }
+        
+        cross(o: Vector3) {
+            return new Vector3(
+                this.y*o.z - this.z*o.y,
+                this.z*o.x - this.x*o.z,
+                this.x*o.y - this.y*o.x);
+        }
 
         binaryWrite(output: Serialization.BinaryWriter) {
             output
@@ -62,5 +83,8 @@ module Yaqe.Math3D
             this.z = input.readFloat32();
         }
 
+        closeTo(o: Vector3) {
+            return this.x.closeTo(o.x) && this.y.closeTo(o.y) && this.z.closeTo(o.z);
+        }
     }
 }

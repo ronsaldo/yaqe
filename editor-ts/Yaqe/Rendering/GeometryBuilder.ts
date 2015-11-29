@@ -62,7 +62,6 @@ module Yaqe.Rendering {
 				last.indexCount = this.indices.length - last.startIndex;
 			}
 		}
-
 		
 		beginPrimitives(primitive: PrimitiveType ) {
 			if(this.lastSubmesh == null || this.lastSubmesh.primitiveType != primitive) {

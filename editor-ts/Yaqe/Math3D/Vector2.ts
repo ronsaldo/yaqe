@@ -1,4 +1,5 @@
-﻿///<reference path='./Vector3.ts'/>
+﻿///<reference path='./Common.ts'/>
+///<reference path='./Vector3.ts'/>
 ///<reference path='./Vector4.ts'/>
 
 ///<reference path='../Serialization/BinarySerializable.ts'/>
@@ -60,6 +61,10 @@ module Yaqe.Math3D
         binaryRead(input: Serialization.BinaryReader) {
             this.x = input.readFloat32();
             this.y = input.readFloat32();
+        }
+        
+        closeTo(o: Vector2) {
+            return this.x.closeTo(o.x) && this.y.closeTo(o.y);
         }
     }
 }

@@ -1,3 +1,4 @@
+///<reference path='../Common/Assert.ts'/>
 ///<reference path='./Matrix4.ts'/>
 ///<reference path='./Vector3.ts'/>
 
@@ -9,6 +10,8 @@ module Yaqe.Math3D
 		
 		constructor(values : Array<number>)
 		{
+			this.assert(values.length == 9, "Matrix3 requires 9 values");
+			
 			this.values = values;
 		}
 		
@@ -41,8 +44,8 @@ module Yaqe.Math3D
 		
 		static xRotation(angle : number)
 		{
-			var c = Math.cos(angle);
-			var s = Math.sin(angle);
+			let c = Math.cos(angle);
+			let s = Math.sin(angle);
 			return new Matrix3([
 				1.0, 0.0, 0.0,
 				0.0, c, -s,
@@ -52,8 +55,8 @@ module Yaqe.Math3D
 
 		static yRotation(angle : number)
 		{
-			var c = Math.cos(angle);
-			var s = Math.sin(angle);
+			let c = Math.cos(angle);
+			let s = Math.sin(angle);
 			return new Matrix3([
 				c, 0.0, s,
 				0.0, 1.0, 0.0,
@@ -63,8 +66,8 @@ module Yaqe.Math3D
 
 		static zRotation(angle : number)
 		{
-			var c = Math.cos(angle);
-			var s = Math.sin(angle);
+			let c = Math.cos(angle);
+			let s = Math.sin(angle);
 			return new Matrix3([
 				c, -s, 0.0,
 				s, c, 0.0,
@@ -125,7 +128,7 @@ module Yaqe.Math3D
 		binaryElementMap(o : Matrix3, op : (first: number, second: number) => number ) : Matrix3
 		{
 			var resultData = new Array<number> (9);
-			for(var i = 0; i < 9; ++i)
+			for(let i = 0; i < 9; ++i)
 				resultData[i] = op(this.values[i], o.values[i]);
 			return new Matrix3(resultData);
 		}
@@ -157,6 +160,28 @@ module Yaqe.Math3D
 				this.m12, this.m22, this.m32,
 				this.m13, this.m23, this.m33,
 			]);
+		}
+		
+		determinant() : number
+		{
+			/**
+			 * Sarrus rule
+			 * m11 m12 m13 | m11 m12 
+			 * m21 m22 m23 | m21 m22
+			 * m31 m32 m33 | m31 m32
+			 */
+			
+			return
+				this.m11*this.m22*this.m33 +
+				this.m12*this.m23*this.m31 +
+				this.m13*this.m21*this.m32 -
+				this.m31*this.m22*this.m13 -
+				this.m32*this.m23*this.m11 -
+				this.m33*this.m21*this.m12;
+		}
+		
+		static determinantOfArray(values: number[]) {
+			return new Matrix3(values).determinant();
 		}
 		
 		mul(o: Matrix3) : Matrix3
@@ -199,13 +224,18 @@ module Yaqe.Math3D
 			);
 		}
 		
+		transposeTransformPosition(p: Vector3) : Vector3
+		{
+			return this.transposeTransformVector(p);
+		}
+		
 		binaryWrite(output: Serialization.BinaryWriter) {
-			for(var i = 0; i < 9; ++i)
+			for(let i = 0; i < 9; ++i)
 				output.writeFloat32(this.values[i]);
         }
 
         binaryRead(input: Serialization.BinaryReader) {
-			for(var i = 0; i < 9; ++i)
+			for(let i = 0; i < 9; ++i)
 				this.values[i] = input.readFloat32();
         }
 	}

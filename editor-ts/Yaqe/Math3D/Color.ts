@@ -23,6 +23,11 @@ module Yaqe.Math3D
 			return new Color(0.0, 0.0, 0.0, 1.0);
 		}
 
+		static makeRandom()
+		{
+			return Color.Red;
+		}
+		
 		get r() {
 			return this.x;
 		}

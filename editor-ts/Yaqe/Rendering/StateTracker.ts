@@ -1,5 +1,6 @@
 ///<reference path='./GpuBuffer.ts'/>
 ///<reference path='./GpuProgram.ts'/>
+///<reference path='./Camera.ts'/>
 
 module Yaqe.Rendering {
 
@@ -16,6 +17,7 @@ module Yaqe.Rendering {
 		private enabledVertexLocations: boolean[];
 		private programs: Object;
 		private currentProgram: GpuProgram;
+		private currentCamera: Camera;
 		
 		constructor(gl: WebGLRenderingContext) {
 			this.gl = gl;
@@ -66,6 +68,17 @@ module Yaqe.Rendering {
 				
 			this.currentProgram = program;
 			this.currentProgram.use();
+			this.setCameraUniforms();
+		}
+		
+		useCamera(camera : Camera) {
+			this.currentCamera = camera;
+			this.setCameraUniforms();
+		}
+		
+		private setCameraUniforms() {
+			if(!this.currentCamera || !this.currentProgram)
+				return;
 		}
 	}
 }

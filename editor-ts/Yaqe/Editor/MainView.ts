@@ -6,17 +6,20 @@
 ///<reference path='../Rendering/Renderable.ts'/>
 ///<reference path="../typings.d.ts" />
 ///<reference path="../Rendering/GpuProgram.ts" />
+///<reference path="../Level/Map.ts" />
 
 module Yaqe.Editor {
     import StateTracker = Rendering.StateTracker;
     import Vector3 = Math3D.Vector3;
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
+    import Map = Level.Map;
     
     export class MainView {
         canvas: HTMLCanvasElement;
         gl: WebGLRenderingContext;
         stateTracker: StateTracker;
+        currentMap : Map;
         private views: View[];
         private renderable: Rendering.Renderable;
 
@@ -54,7 +57,11 @@ module Yaqe.Editor {
         }
         
         createViews() {
-            this.views = [new View(this.stateTracker), new View(this.stateTracker), new View(this.stateTracker), new View(this.stateTracker)]
+            this.views = [new View(this, this.stateTracker), new View(this, this.stateTracker), new View(this, this.stateTracker), new View(this, this.stateTracker)]
+            this.views[0].setTop().setOrthographic();
+            this.views[1].setFront().setPerspective();
+            this.views[2].setFront().setOrthographic();
+            this.views[3].setSide().setOrthographic();
             this.updateCanvasSize();
         }
         
