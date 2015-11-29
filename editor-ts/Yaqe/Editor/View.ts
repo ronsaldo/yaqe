@@ -44,7 +44,6 @@ module Yaqe.Editor {
             this.mainView = mainView;
             this.stateTracker = stateTracker;
             this.camera = new Camera();
-            this.camera.position = new Vector3(0.0, 0.5, 2.0);
             this.isOrthographic_ = true;
             this.renderMode = ViewRenderMode.Wireframe;
             this.gridTransform = Matrix3.identity();  
