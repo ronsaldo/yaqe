@@ -16,21 +16,25 @@ module Yaqe.Math3D
             this.y = y;
             this.z = z;
         }
+
+        copy() {
+            return new Vector3(this.x, this.y, this.z);
+        }
         
         static zeros()
         {
             return new Vector3(0.0, 0.0, 0.0);
         }
-        
+
         static ones()
         {
-            return new Vector3(1.0, 1.0, 1.0); 
+            return new Vector3(1.0, 1.0, 1.0);
         }
-        
+
         asVector4() {
             return new Vector4(this.x, this.y, this.z, 0.0);
         }
-        
+
         negated() {
             return new Vector3(-this.x, -this.y, -this.z);
         }
@@ -50,7 +54,7 @@ module Yaqe.Math3D
         divElements(other: Vector3) {
             return new Vector3(this.x/other.x, this.y/other.y, this.z/other.z);
         }
-        
+
         mulScalar(scalar: number) {
             return new Vector3(this.x*scalar, this.y*scalar, this.z*scalar);
         }
@@ -70,7 +74,7 @@ module Yaqe.Math3D
         dot(other: Vector3) {
             return this.x*other.x + this.y*other.y + this.z*other.z;
         }
-        
+
         cross(o: Vector3) {
             return new Vector3(
                 this.y*o.z - this.z*o.y,
@@ -94,7 +98,7 @@ module Yaqe.Math3D
         closeTo(o: Vector3) {
             return this.x.closeTo(o.x) && this.y.closeTo(o.y) && this.z.closeTo(o.z);
         }
-        
+
         toString() {
             return '{x: ' + this.x + ', y: ' + this.y + ', z: ' + this.z + '}';
         }

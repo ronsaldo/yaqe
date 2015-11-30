@@ -16,6 +16,18 @@ module Yaqe.Math3D
             this.y = y;
         }
 
+        copy() {
+            return new Vector2(this.x, this.y);
+        }
+
+        static zeros() {
+            return new Vector2();
+        }
+
+        static ones() {
+            return new Vector2(1, 1);
+        }
+
         asVector3() {
             return new Vector3(this.x, this.y, 0.0);
         }
@@ -62,9 +74,13 @@ module Yaqe.Math3D
             this.x = input.readFloat32();
             this.y = input.readFloat32();
         }
-        
+
         closeTo(o: Vector2) {
             return this.x.closeTo(o.x) && this.y.closeTo(o.y);
+        }
+
+        toString() {
+            return '{x: ' + this.x + ', y: ' + this.y + '}';
         }
     }
 }
