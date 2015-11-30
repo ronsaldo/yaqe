@@ -15,10 +15,11 @@ module Yaqe.Level {
     import Color = Math3D.Color;
 	import Plane = Math3D.Plane;
 	import Matrix3 = Math3D.Matrix3;
+    import Ray = Math3D.Ray;
 	import GeometryBuilder = Rendering.GeometryBuilder;
 	import StateTracker = Rendering.StateTracker;
 	import MeshRenderable = Rendering.MeshRenderable;
-	
+
 	/**
 	 * An entity in the level.
 	 */
@@ -32,7 +33,8 @@ module Yaqe.Level {
 		private wireModelMesh: MeshRenderable;
 		private solidModelMesh: MeshRenderable;
 		private texturedModelMesh: MeshRenderable;
-		
+        private selected_: boolean;
+
 		constructor(className : string, position : Vector3 = Vector3.zeros(), orientation : Matrix3 = Matrix3.identity(), brushes : Array<Brush> = [], color : Color = Color.makeRandom())
 		{
 			this.className = className;
@@ -40,14 +42,19 @@ module Yaqe.Level {
 			this.position = position;
 			this.orientation = orientation;
 			this.color = color;
+            this.selected_ = false;
+
+            for(let brush of brushes)
+                brush.entity = this;
 		}
-		
+
 		addBrush(brush: Brush) {
+            brush.entity = this;
 			this.brushes.push(brush);
-			this.invalidateGeometry();
+			this.invalidateModels();
 		}
-		
-		invalidateGeometry() {
+
+		invalidateModels() {
 			this.wireModelMesh = null;
 			this.solidModelMesh = null;
 			this.texturedModelMesh = null;
@@ -58,38 +65,54 @@ module Yaqe.Level {
 			for(let brush of this.brushes) {
 				brush.buildWireModel(builder);
 			}
-			
+
 			this.wireModelMesh = builder.createMeshRenderable(stateTracker.gl);
 		}
-		
+
 		private buildSolidModel(stateTracker: StateTracker) {
 			let builder = new GeometryBuilder<Rendering.StandardVertex3D> (Rendering.StandardVertex3D);
 			for(let brush of this.brushes) {
 				brush.buildSolidModel(builder);
 			}
-			
+
 			this.solidModelMesh = builder.createMeshRenderable(stateTracker.gl);
 		}
 
 		private buildTexturedModel(stateTracker: StateTracker) {
 		}
-		
+
 		getWireModel(stateTracker: StateTracker) {
 			if(!this.wireModelMesh)
 				this.buildWireModel(stateTracker);
 			return this.wireModelMesh;
 		}
-		
+
 		getSolidModel(stateTracker: StateTracker) {
 			if(!this.solidModelMesh)
 				this.buildSolidModel(stateTracker);
 			return this.solidModelMesh;
 		}
-		
+
 		getTexturedModel(stateTracker: StateTracker) {
 			if(!this.texturedModelMesh)
 				this.buildTexturedModel(stateTracker);
 			return this.texturedModelMesh;
 		}
+
+        pickFaceWithRay(ray: Ray) {
+            let bestDistance = Number.POSITIVE_INFINITY;
+            let bestFace = null;
+            for(let brush of this.brushes) {
+                let distanceCandidate = brush.pickFaceWithRay(ray);
+                let distance = distanceCandidate[0];
+                let candidate = distanceCandidate[1];
+                if(distance < bestDistance && candidate != null) {
+                    bestDistance = distance;
+                    bestFace = candidate;
+                }
+            }
+
+            return [bestDistance, bestFace];
+        }
 	}
 }

@@ -3,6 +3,7 @@
 ///<reference path='../Math3D/Matrix3.ts'/>
 ///<reference path='../Math3D/Matrix4.ts'/>
 ///<reference path='../Math3D/Plane.ts'/>
+///<reference path='../Math3D/Ray.ts'/>
 ///<reference path='./TransformableObject.ts'/>
 
 module Yaqe.Rendering {
@@ -11,6 +12,7 @@ module Yaqe.Rendering {
 	import Matrix3 = Math3D.Matrix3;
 	import Matrix4 = Math3D.Matrix4;
 	import Plane = Math3D.Plane;
+    import Ray = Math3D.Ray;
 
 	/**
 	 * A camera
@@ -78,23 +80,38 @@ module Yaqe.Rendering {
             this.rightTopFar = new Vector3(farRight, farTop, -far);
         }
 
-        localPointAtNearPlane(point: Vector2) {
+        localPointAtNearPlane(point: Vector2): Vector3 {
             let bottom = Math3D.lerp(this.leftBottomNear, this.rightBottomNear, point.x);
             let top = Math3D.lerp(this.leftTopNear, this.rightTopNear, point.x);
             return Math3D.lerp(bottom, top, point.y);
         }
 
-        localPointAtFarPlane(point: Vector2) {
+        localPointAtFarPlane(point: Vector2): Vector3 {
             let bottom = Math3D.lerp(this.leftBottomFar, this.rightBottomFar, point.x);
             let top = Math3D.lerp(this.leftTopFar, this.rightTopFar, point.x);
             return Math3D.lerp(bottom, top, point.y);
         }
 
-        localPointAtDistance(point: Vector2, distance: number) {
+        localPointAtDistance(point: Vector2, distance: number): Vector3 {
             let nearPoint = this.localPointAtNearPlane(point);
             let farPoint = this.localPointAtFarPlane(point);
             let distanceFactor = (distance - this.nearDistance) / (this.farDistance - this.nearDistance);
             return Math3D.lerp(nearPoint, farPoint, distanceFactor);
+        }
+
+        localRayAtPosition(point: Vector2) {
+            let origin = this.localPointAtNearPlane(point);
+            let target = this.localPointAtFarPlane(point);
+            let direction = target.sub(origin).normalized();
+            return new Ray(origin, direction);
+        }
+
+        worldRayAtPosition(point: Vector2) {
+            let modelMatrix = this.modelMatrix;
+            let origin = modelMatrix.transformPosition(this.localPointAtNearPlane(point));
+            let target = modelMatrix.transformPosition(this.localPointAtFarPlane(point));
+            let direction = target.sub(origin).normalized();
+            return new Ray(origin, direction);
         }
 	}
 }

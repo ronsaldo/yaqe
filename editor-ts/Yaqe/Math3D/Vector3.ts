@@ -20,7 +20,7 @@ module Yaqe.Math3D
         copy() {
             return new Vector3(this.x, this.y, this.z);
         }
-        
+
         static zeros()
         {
             return new Vector3(0.0, 0.0, 0.0);
@@ -69,6 +69,10 @@ module Yaqe.Math3D
 
         length() {
             return Math.sqrt(this.length2());
+        }
+
+        normalized() {
+            return this.divScalar(this.length());
         }
 
         dot(other: Vector3) {

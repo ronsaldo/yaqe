@@ -1,5 +1,6 @@
 ﻿///<reference path='./View.ts'/>
 ///<reference path="./MapRenderer.ts" />
+///<reference path="./Selection.ts"/>
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Rendering/StateTracker.ts'/>
 ///<reference path='../Rendering/GeometryBuilder.ts'/>
@@ -23,6 +24,8 @@ module Yaqe.Editor {
         gl: WebGLRenderingContext;
         stateTracker: StateTracker;
         currentMap : Map;
+        selectionClass: any;
+        private selection_: Selection;
         private activeView: View;
         private mouseView: View;
         private menuView: View;
@@ -49,6 +52,8 @@ module Yaqe.Editor {
             // Create the state tracker.
             this.stateTracker = new StateTracker(this.gl);
             this.lastMousePosition = new Vector2(-1, -1);
+            this.selection_ = new BrushSelection();
+            this.selectionClass = BrushSelection;
 
             // Load the shader
             this.loadShaders(() => {
@@ -253,6 +258,10 @@ module Yaqe.Editor {
             this.mouseCaptureView = null;
         }
 
+        isMouseCaptured() {
+            return this.mouseCaptureView != null;
+        }
+
         changeActiveView(view: View) {
             if(this.activeView == view)
                 return;
@@ -277,6 +286,20 @@ module Yaqe.Editor {
 
         changeMenuView(view: View) {
             this.menuView = view;
+        }
+
+        get selection() {
+            return this.selection_;
+        }
+
+        set selection(newSelection: Selection) {
+            if(this.selection_ != null)
+                this.selection_.clearSelectionFlag();
+
+            this.selection_ = newSelection;
+
+            if(this.selection_ != null)
+                this.selection_.setSelectionFlag();
         }
 
         private registerCanvasEvents() {
@@ -340,7 +363,6 @@ module Yaqe.Editor {
                 this.changeMouseView(null);
                 this.changeMenuView(null);
             }
-
         }
 
         private onKeyDown(ev: KeyboardEvent) {

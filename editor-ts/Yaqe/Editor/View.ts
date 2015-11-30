@@ -165,7 +165,17 @@ module Yaqe.Editor {
         }
 
         private startSelectionTool(mousePosition: Vector2, ev: MouseEvent) {
-
+            let ray = this.rayForWindowPosition(mousePosition);
+            let intersection = this.currentMap.pickFaceWithRay(ray);
+            let face = intersection[1];
+            if(face == null) {
+                this.mainView.selection = new this.mainView.selectionClass;
+            }
+            else {
+                let selection = new this.mainView.selectionClass;
+                selection.addFace(face);
+                this.mainView.selection = selection;
+            }
         }
 
         private startCameraDragTool(mousePosition: Vector2, ev: MouseEvent) {
@@ -177,6 +187,13 @@ module Yaqe.Editor {
             this.captureMouse();
             dragTool.view = this;
             dragTool.startOnMouseDown(mousePosition, ev);
+        }
+
+        startDragOnKey(mousePosition: Vector2, ev: KeyboardEvent, dragTool: DragTool) {
+            this.currentDragTool = dragTool;
+            this.captureMouse();
+            dragTool.view = this;
+            dragTool.startOnKeyDown(mousePosition, ev);
         }
 
         dragFinished() {
@@ -223,7 +240,8 @@ module Yaqe.Editor {
         }
 
         mouseEntered() {
-
+            if(!this.mainView.isMouseCaptured())
+                this.mainView.changeActiveView(this);
         }
 
         normalizedPosition(windowPosition: Vector2) {
@@ -236,6 +254,10 @@ module Yaqe.Editor {
 
         windowToLocal(windowPosition: Vector2, depth: number) {
             return this.normalizedToLocal(this.normalizedPosition(windowPosition), depth);
+        }
+
+        rayForWindowPosition(mousePosition: Vector2) {
+            return this.camera.worldRayAtPosition(this.normalizedPosition(mousePosition));
         }
     }
 }
