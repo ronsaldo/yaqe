@@ -24,5 +24,19 @@
 			{"variable" : "modelMatrix", "binding": "Transformation.Model"},
 			{"variable" : "viewMatrix", "binding": "Transformation.View"}
 		]
+	},
+	"LightedColor3D" : {
+		"vertex" : "lightedColor3d.glslv",
+		"fragment" : "lightedColor3d.glslf",
+		"attributes" : [
+			{"variable" : "vPosition", "binding": "Position"},
+			{"variable" : "vNormal", "binding": "Normal"},
+			{"variable" : "vColor", "binding": "Color"}
+		],
+		"uniforms" : [
+			{"variable" : "projectionMatrix", "binding": "Transformation.Projection"},
+			{"variable" : "modelMatrix", "binding": "Transformation.Model"},
+			{"variable" : "viewMatrix", "binding": "Transformation.View"}
+		]
 	}
 }

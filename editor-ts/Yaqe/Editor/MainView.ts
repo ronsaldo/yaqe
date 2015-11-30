@@ -93,7 +93,7 @@ module Yaqe.Editor {
             // Perspective
             this.views[1]
                 .setPerspective()
-                .setSolidMode();
+                .setLightedSolidMode();
             this.views[1].camera.position = new Vector3(0.0, 0.5, 3.0);
 
             // Front view

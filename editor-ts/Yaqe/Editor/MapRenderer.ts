@@ -17,20 +17,20 @@ module Yaqe.Editor {
     import Renderable = Rendering.Renderable;
     import GeometryBuilder = Rendering.GeometryBuilder;
 	import StateTracker = Rendering.StateTracker;
-	
+
 	/**
 	 * A map that contains entities.
 	 */
 	export class MapRenderer
 	{
 		stateTracker: StateTracker;
-		
+
         gridSize: number;
-        
+
         private primaryGrid: Renderable;
         private secondaryGrid: Renderable;
-        
-        
+
+
 		constructor(stateTracker: StateTracker)
 		{
 			this.stateTracker = stateTracker;
@@ -45,7 +45,7 @@ module Yaqe.Editor {
             gl.viewport(0, 0, screenWidth, screenHeight);
             gl.scissor(0, 0, screenWidth, screenHeight);
             gl.enable(gl.SCISSOR_TEST);
-            
+
             gl.clearColor(0.8, 0.8, 0.8, 1);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -55,39 +55,39 @@ module Yaqe.Editor {
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.depthFunc(gl.LEQUAL);
             gl.lineWidth(2.0);
-            
+
 			for(let view of views)
 				this.renderView(view);
 		}
-		
+
 		renderView(view: View) {
             let gl = this.stateTracker.gl;
 			view.updateCameraProjection();
-			
+
             gl.viewport(view.position.x, view.position.y, view.size.x, view.size.y);
             gl.scissor(view.position.x, view.position.y, view.size.x, view.size.y);
             gl.enable(gl.SCISSOR_TEST);
-            
+
             gl.clearColor(0, 0, 0, 1);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            
+
             view.updateCameraProjection();
-            
+
             this.drawGrid(view);
             this.drawMap(view);
 		}
-        
+
         private createSpecialMeshes() {
             this.createGrid();
         }
-        
+
         private createGeometryBuilder() {
             return new GeometryBuilder<Rendering.StandardVertex3D> (Rendering.StandardVertex3D);
         }
-        
+
         private createGrid() {
             this.gridSize = 1.0;
-            
+
             let gl = this.stateTracker.gl;
             this.primaryGrid = this.createGeometryBuilder()
                 .setColor(Color.Gray)
@@ -98,12 +98,12 @@ module Yaqe.Editor {
                 .add3DLineGrid(20, 20, 201)
                 .createMeshRenderable(gl);
         }
-        
+
         gridTranslationModule(position: number) {
             let mod = position - Math.floor(position / this.gridSize) * this.gridSize;
             return position - mod;
         }
-        
+
         drawGrid(view: View) {
             let gl = this.stateTracker.gl;
 
@@ -118,25 +118,25 @@ module Yaqe.Editor {
             this.stateTracker.useCamera(view.camera);
             this.stateTracker.modelMatrix = gridTransform;
 
-            // Use the solid color shader.            
+            // Use the solid color shader.
             this.stateTracker.useProgram("Color3D");
-            
+
             // Draw the secondary grid.
             this.secondaryGrid.draw(this.stateTracker);
-            
+
             // Draw the primary grid.
             this.primaryGrid.draw(this.stateTracker);
         }
-        
+
         private drawMap(view: View) {
             let map = view.currentMap;
             if(!map)
                 return;
-                
+
             // Set the camera
             this.stateTracker.useCamera(view.camera);
             this.stateTracker.modelMatrix = Matrix4.identity();
-            
+
             // Draw the wire models.
             switch(view.renderMode)
             {
@@ -148,6 +148,10 @@ module Yaqe.Editor {
                 this.stateTracker.useProgram("Color3D");
                 this.drawSolid(view);
                 break;
+            case ViewRenderMode.LightedSolid:
+                this.stateTracker.useProgram("LightedColor3D");
+                this.drawSolid(view);
+                break;
             case ViewRenderMode.Textured:
                 this.stateTracker.useProgram("Color3D");
                 this.drawTextured(view);
@@ -156,7 +160,7 @@ module Yaqe.Editor {
                 break;
             }
         }
-        
+
         private drawWire(view: View) {
             let map = view.currentMap;
             for(let entity of map.entities) {
@@ -166,7 +170,7 @@ module Yaqe.Editor {
                 }
             }
         }
-		
+
         private drawSolid(view: View) {
             let map = view.currentMap;
             for(let entity of map.entities) {
@@ -176,7 +180,7 @@ module Yaqe.Editor {
                 }
             }
         }
-		
+
         private drawTextured(view: View) {
             let map = view.currentMap;
             for(let entity of map.entities) {
