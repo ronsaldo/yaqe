@@ -39,13 +39,13 @@ module Yaqe.Editor {
         gridCameraDirection: Vector3;
 
         private currentDragTool: DragTool;
-        private mainView : MainView;
+        private mainView_ : MainView;
         private renderable: Rendering.Renderable;
         private isOrthographic_: boolean;
 
         constructor(mainView : MainView, stateTracker : StateTracker) {
             // Create the rendering context.
-            this.mainView = mainView;
+            this.mainView_ = mainView;
             this.stateTracker = stateTracker;
             this.camera = new Camera();
             this.isOrthographic_ = true;
@@ -61,6 +61,10 @@ module Yaqe.Editor {
 
         get currentMap() {
             return this.mainView.currentMap;
+        }
+
+        get mainView() {
+            return this.mainView_;
         }
 
         setTop() {
@@ -220,6 +224,30 @@ module Yaqe.Editor {
         onKeyDown(mousePosition: Vector2, ev: KeyboardEvent) {
             if(this.currentDragTool != null)
                 return this.currentDragTool.onKeyDown(mousePosition, ev);
+
+            let keyCode = ev.which || ev.keyCode;
+            if(!ev.altKey && ev.shiftKey && !ev.ctrlKey) {
+                switch(keyCode)
+                {
+                case 'A'.asKeyCode():
+                    return this.addNewElement(mousePosition, ev);
+                default:
+                    // Do nothing.
+                    break;
+                }
+            }
+            else if(!ev.altKey && !ev.shiftKey && !ev.ctrlKey) {
+                switch(keyCode)
+                {
+                case 'X'.asKeyCode():
+                    return this.mainView.removeSelectedElements();
+                case 'G'.asKeyCode():
+                    return this.grabToolStart(mousePosition, ev);
+                default:
+                    // Do nothing.
+                    break;
+                }
+            }
         }
 
         onKeyUp(mousePosition: Vector2, ev: KeyboardEvent) {
@@ -259,5 +287,19 @@ module Yaqe.Editor {
         rayForWindowPosition(mousePosition: Vector2) {
             return this.camera.worldRayAtPosition(this.normalizedPosition(mousePosition));
         }
+
+        snapToGrid(vector: Vector3, primary: boolean) {
+            if(primary)
+                return vector.roundTo(1.0);
+            return vector.roundTo(0.1);
+        }
+
+        addNewElement(mousePosition: Vector2, ev) {
+        }
+
+        grabToolStart(mousePosition: Vector2, ev) {
+            this.startDragOnKey(mousePosition, ev, new ElementsGrabTool());
+        }
+
     }
 }

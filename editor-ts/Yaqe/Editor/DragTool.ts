@@ -14,9 +14,9 @@ module Yaqe.Editor {
         view: View;
 
         get mainView() {
-            return this.mainView;
+            return this.view.mainView;
         }
-        
+
         startOnMouseDown(mousePosition: Vector2, ev: MouseEvent) {
         }
 

@@ -30,6 +30,14 @@ module Yaqe.Level {
             this.selected_ = false;
 		}
 
+        copy() {
+            let copy = new BrushFace(this.plane.copy());
+            copy.indices = this.indices.slice();
+            copy.selected_ = this.selected;
+            copy.brush = this.brush;
+            return copy;
+        }
+
 		clearGeometry() {
 			this.indices = []
 		}
@@ -101,6 +109,17 @@ module Yaqe.Level {
             if(this.selected_ != selected)
                 this.invalidateModels();
             this.selected_ = selected;
+        }
+
+        rebuildPlane() {
+            let v1 = this.vertexAt(0);
+            let v2 = this.vertexAt(1);
+            let v3 = this.vertexAt(2);
+            let u = v2.sub(v1);
+            let v = v3.sub(v2);
+            let n = u.cross(v).normalized();
+            let d = n.dot(v1);
+            this.plane = new Plane(n, d);
         }
 	}
 }

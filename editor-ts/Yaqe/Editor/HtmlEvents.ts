@@ -4,7 +4,7 @@ interface String {
 
 Object.defineProperty(String.prototype, "asKeyCode", {
 	value: function() {
-        this.assert(this.length() == 1);
+        this.assert(this.length == 1);
 		return this.charCodeAt(0);
 	}
 });

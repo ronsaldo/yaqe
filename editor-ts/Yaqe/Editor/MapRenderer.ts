@@ -71,6 +71,9 @@ module Yaqe.Editor {
             gl.clearColor(0, 0, 0, 1);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthMask(true);
+            
             view.updateCameraProjection();
 
             this.drawGrid(view);
@@ -134,8 +137,17 @@ module Yaqe.Editor {
                 return;
 
             // Set the camera
+            let gl = this.stateTracker.gl;
             this.stateTracker.useCamera(view.camera);
             this.stateTracker.modelMatrix = Matrix4.identity();
+            if(view.isOrthographic) {
+                gl.disable(gl.DEPTH_TEST);
+                gl.depthMask(false);
+            }
+            else {
+                gl.enable(gl.DEPTH_TEST);
+                gl.depthMask(true);
+            }
 
             // Draw the wire models.
             switch(view.renderMode)

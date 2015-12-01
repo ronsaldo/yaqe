@@ -27,13 +27,15 @@ module Yaqe.Level {
 		vertices: Vector3[];
 		edges: number[][];
         entity: Entity;
+        isRounding: boolean;
         private selected_: boolean;
 
-		constructor(faces : Array<BrushFace>, color : Color = Color.makeRandom()) {
+		constructor(faces : Array<BrushFace>, color : Color = Color.makeRandom(), isRounding: boolean = true) {
 			this.faces = faces;
 			this.color = color;
 			this.edges = []
             this.selected_ = false;
+            this.isRounding = isRounding;
 
 			for(let face of this.faces)
 				face.brush = this;
@@ -57,6 +59,24 @@ module Yaqe.Level {
 			]);
 		}
 
+        createMemento() {
+            return {
+                faces: this.faces.map(face => face.copy()),
+                isRounding: this.isRounding
+            };
+        }
+
+        rebuildPlanes() {
+            for(let face of this.faces)
+                face.rebuildPlane();
+        }
+
+        restoreFromMemento(memento) {
+            this.isRounding = memento.isRounding;
+            this.faces = memento.faces.map(face => face.copy())
+            this.computePolygons();
+        }
+
         get selected() {
             return this.selected_;
         }
@@ -69,12 +89,14 @@ module Yaqe.Level {
 
 		clearGeometry() {
 			this.vertices = [];
+            this.invalidateModels();
 			for(let face of this.faces)
 				face.clearGeometry();
 		}
 
         invalidateModels() {
-            this.entity.invalidateModels();
+            if(this.entity != null)
+                this.entity.invalidateModels();
         }
 
 		computePolygons() {
@@ -103,6 +125,32 @@ module Yaqe.Level {
 				face.sortCounterClockwise();
 			this.extractEdges();
 		}
+
+        modifyVerticesApplying(transform: (Vector3) => Vector3) {
+            for(let i = 0;i < this.vertices.length; ++i) {
+                let newVertex = transform(this.vertices[i]);
+                this.vertices[i] = this.roundPosition(newVertex);
+            }
+
+            this.rebuildPlanes();
+            if(this.isRounding)
+                this.computePolygons();
+            this.invalidateModels();
+        }
+
+        translateBy(delta: Vector3) {
+            this.modifyVerticesApplying(vertex => vertex.add(delta));
+        }
+
+        private get vertexQuantum() {
+            return 0.001;
+        }
+
+        private roundPosition(position: Vector3) {
+            if(this.isRounding)
+                return position.roundTo(this.vertexQuantum);
+            return position;
+        }
 
 		private containsEdge(i1: number, i2: number) {
 			for(let edge of this.edges) {

@@ -106,5 +106,9 @@ module Yaqe.Math3D
         toString() {
             return '{x: ' + this.x + ', y: ' + this.y + ', z: ' + this.z + '}';
         }
+
+        roundTo(quantum) {
+            return new Vector3(this.x.roundTo(quantum), this.y.roundTo(quantum), this.z.roundTo(quantum));
+        }
     }
 }

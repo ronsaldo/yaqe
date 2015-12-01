@@ -30,6 +30,7 @@ module Yaqe.Editor {
         }
 
         abstract addFace(face: BrushFace);
+        abstract newInstance(): Selection;
 
         isBrushSelection() {
             return false;
@@ -48,6 +49,24 @@ module Yaqe.Editor {
             for(let element of this.elements)
                 element.selected = true;
         }
+
+        createMementos() {
+            return this.elements.map(element => element.createMemento());
+        }
+
+        restoreFromMementos(mementos: any[]) {
+            this.assert(mementos.length == this.elements.length);
+
+            for(let i = 0; i < mementos.length; ++i) {
+                this.elements[i].restoreFromMemento(mementos[i]);
+            }
+        }
+
+        copy() {
+            let instance = this.newInstance();
+            instance.elements = this.elements.map(el => el);
+            return instance;
+        }
     }
 
     export class BrushSelection extends Selection {
@@ -57,6 +76,10 @@ module Yaqe.Editor {
 
         isBrushSelection() {
             return true;
+        }
+
+        newInstance() {
+            return new BrushSelection();
         }
     }
 
@@ -68,5 +91,10 @@ module Yaqe.Editor {
         isFaceSelection() {
             return true;
         }
+
+        newInstance() {
+            return new FaceSelection();
+        }
+
     }
 }

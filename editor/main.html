@@ -4,24 +4,24 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		
+
 		<title>YAQE</title>
-		
+
 		<script src="lib/webcomponentsjs/webcomponents-lite.min.js"></script>
 
 		<link rel="import" href="lib/iron-flex-layout/classes/iron-flex-layout.html">
 		<link rel="import" href="lib/iron-pages/iron-pages.html">
-		
+
 		<link rel="import" href="lib/paper-toolbar/paper-toolbar.html">
 		<link rel="import" href="lib/paper-button/paper-button.html">
 		<link rel="import" href="lib/paper-icon-button/paper-icon-button.html">
 		<link rel="import" href="lib/paper-drawer-panel/paper-drawer-panel.html">
 		<link rel="import" href="lib/paper-tabs/paper-tabs.html">
-		
+
 		<link rel="import" href="assets/icons/tango-set.html">
-		
+
 		<link rel="stylesheet" href="main.css">
-	
+
 	</head>
 	<body class="fullbleed vertical layout">
 		<div>
@@ -30,10 +30,10 @@
 				<paper-icon-button icon="tango:document-open" on-tap="openAction">Open</paper-icon-button>
 				<paper-icon-button icon="tango:document-save" on-tap="saveAction">Save</paper-icon-button>
 				<paper-icon-button icon="tango:document-save-as" on-tap="saveAsAction">Save As</paper-icon-button>
-				
+
 				<paper-icon-button icon="tango:edit-undo" on-tap="undoAction">Undo</paper-icon-button>
 				<paper-icon-button icon="tango:edit-redo" on-tap="redoAction">Redo</paper-icon-button>
-				
+
 				<paper-icon-button icon="tango:edit-cut" on-tap="cutAction">Cut</paper-icon-button>
 				<paper-icon-button icon="tango:edit-copy" on-tap="copyAction">Copy</paper-icon-button>
 				<paper-icon-button icon="tango:edit-paste" on-tap="pasteAction">Paste</paper-icon-button>
@@ -43,7 +43,7 @@
 
 		<div class="flex horizontal layout">
 			<div class="flex-3">
-				<canvas id="mainCanvas">
+				<canvas tabindex="1" id="mainCanvas">
 				</canvas>
 			</div>
 			<div class="flex vertical layout">
@@ -53,9 +53,9 @@
 						<div class="vertical layout">
 							<paper-tabs selected="{{selectedPage}}">
 								<paper-tab>Objects</paper-tab>
-								<paper-tab>Prefabs</paper-tab>					
+								<paper-tab>Prefabs</paper-tab>
 							</paper-tabs>
-							
+
 							<iron-pages class="flex" selected="{{selectedPage}}">
 								<div>Here goes the object list</div>
 								<div>Here goes the prefabs</div>
@@ -63,16 +63,16 @@
 						</div>
 					</template>
 				</div>
-				
+
 				<!-- Materials and textures -->
 				<div class="flex">
 					<template is="dom-bind" id="materialToolNotebook">
 						<div class="vertical layout">
 							<paper-tabs selected="{{selectedPage}}">
 								<paper-tab>Materials</paper-tab>
-								<paper-tab>Textures</paper-tab>					
+								<paper-tab>Textures</paper-tab>
 							</paper-tabs>
-							
+
 							<iron-pages class="flex" selected="{{selectedPage}}">
 								<div>Here goes the materials list</div>
 								<div>Here goes the textures</div>
@@ -91,12 +91,12 @@
 			window.addEventListener('WebComponentsReady', function() { //You have to make sure that all custom elements are loaded
 				var objectToolNotebook = document.querySelector("template#objectToolNotebook");
 				objectToolNotebook.selectedPage = 0; // display the number 1
-				
+
 				var materialToolNotebook = document.querySelector("template#materialToolNotebook");
 				materialToolNotebook.selectedPage = 0; // display the number 1
 			});
 		</script>
-		
+
 		<script src="yaqets.js" ></script>
 	</body>
 </html>

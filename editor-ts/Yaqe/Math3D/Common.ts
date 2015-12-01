@@ -1,5 +1,6 @@
 interface Number {
 	closeTo(o: number): boolean;
+    roundTo(quantum: number): number;
 }
 
 module Yaqe.Math3D {
@@ -9,6 +10,12 @@ module Yaqe.Math3D {
 		value: function(o: number) {
 			let dif = this - o;
 			return -EPSILON <= dif && dif <= EPSILON;
+		}
+	});
+
+    Object.defineProperty(Number.prototype, "roundTo", {
+		value: function(quantum: number) {
+			return Math.round(this/quantum) * quantum;
 		}
 	});
 

@@ -302,6 +302,13 @@ module Yaqe.Editor {
                 this.selection_.setSelectionFlag();
         }
 
+        removeSelectedElements() {
+        }
+
+        get currentPivot() {
+            return new Vector3();
+        }
+
         private registerCanvasEvents() {
             let canvas =  this.canvas;
             canvas.addEventListener("keydown", (ev) => this.onKeyDown(ev));
@@ -367,12 +374,12 @@ module Yaqe.Editor {
 
         private onKeyDown(ev: KeyboardEvent) {
             if(this.activeView != null)
-                this.activeView.onKeyDown(this.lastMousePosition, ev);
+                this.activeView.onKeyDown(this.lastMousePosition.sub(this.activeView.position), ev);
         }
 
         private onKeyUp(ev: KeyboardEvent) {
             if(this.activeView != null)
-                this.activeView.onKeyUp(this.lastMousePosition, ev);
+                this.activeView.onKeyUp(this.lastMousePosition.sub(this.activeView.position), ev);
         }
     }
 }
