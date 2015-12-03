@@ -1,7 +1,9 @@
 ///<reference path="../Level/BrushFace.ts"/>
+///<reference path="../Math3D/Vector3.ts"/>
 
 module Yaqe.Editor {
     import BrushFace = Level.BrushFace;
+    import Vector3 = Math3D.Vector3;
 
     export abstract class Selection {
         // TODO: Use a proper set
@@ -27,6 +29,15 @@ module Yaqe.Editor {
             }
 
             return false;
+        }
+
+        get center() {
+            let center = Vector3.zeros();
+            for(let element of this.elements) {
+                center = center.add(element.center);
+            }
+
+            return center.divScalar(this.elements.length);
         }
 
         abstract addFace(face: BrushFace);

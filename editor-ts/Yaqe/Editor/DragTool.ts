@@ -53,7 +53,7 @@ module Yaqe.Editor {
         }
     }
 
-    export class RelativePositionDragTool extends DragTool {
+    export class MovementDragTool extends DragTool {
         keyStarted: boolean;
         changeDirection: Vector3;
         mouseStartButton: number;
@@ -87,25 +87,6 @@ module Yaqe.Editor {
         changeDirectionOn(newDirection: Vector3, mousePosition: Vector2, ev) {
             this.changeDirection = newDirection;
             this.update(mousePosition.sub(this.mouseStartPosition), ev);
-        }
-        onMouseMove(mousePosition: Vector2, ev: MouseEvent) {
-            this.update(mousePosition.sub(this.mouseStartPosition), ev);
-        }
-
-        onMouseDown(mousePosition: Vector2, ev: MouseEvent) {
-            this.update(mousePosition.sub(this.mouseStartPosition), ev);
-            if(this.keyStarted) {
-                if(ev.button == MouseButton.Left)
-                    this.end(true);
-                else if(ev.button == MouseButton.Right)
-                    this.end(false);
-            }
-        }
-
-        onMouseUp(mousePosition: Vector2, ev: MouseEvent) {
-            this.update(mousePosition.sub(this.mouseStartPosition), ev);
-            if(ev.button == this.mouseStartButton)
-                this.end(true);
         }
 
         onKeyDown(mousePosition: Vector2, ev: KeyboardEvent) {
@@ -152,6 +133,50 @@ module Yaqe.Editor {
 
         update(delta: Vector2, ev) {
 
+        }
+    }
+
+    export class RelativePositionDragTool extends MovementDragTool {
+        onMouseMove(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition.sub(this.mouseStartPosition), ev);
+        }
+
+        onMouseDown(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition.sub(this.mouseStartPosition), ev);
+            if(this.keyStarted) {
+                if(ev.button == MouseButton.Left)
+                    this.end(true);
+                else if(ev.button == MouseButton.Right)
+                    this.end(false);
+            }
+        }
+
+        onMouseUp(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition.sub(this.mouseStartPosition), ev);
+            if(ev.button == this.mouseStartButton)
+                this.end(true);
+        }
+    }
+
+    export class WindowSpaceDragTool extends MovementDragTool {
+        onMouseMove(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition, ev);
+        }
+
+        onMouseDown(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition, ev);
+            if(this.keyStarted) {
+                if(ev.button == MouseButton.Left)
+                    this.end(true);
+                else if(ev.button == MouseButton.Right)
+                    this.end(false);
+            }
+        }
+
+        onMouseUp(mousePosition: Vector2, ev: MouseEvent) {
+            this.update(mousePosition, ev);
+            if(ev.button == this.mouseStartButton)
+                this.end(true);
         }
     }
 }

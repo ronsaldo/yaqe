@@ -29,6 +29,7 @@ module Yaqe.Level {
         entity: Entity;
         isRounding: boolean;
         private selected_: boolean;
+        private center_: Vector3;
 
 		constructor(faces : Array<BrushFace>, color : Color = Color.makeRandom(), isRounding: boolean = true) {
 			this.faces = faces;
@@ -99,6 +100,21 @@ module Yaqe.Level {
                 this.entity.invalidateModels();
         }
 
+        get center() {
+            return this.center_;
+        }
+
+        computeCenter() {
+            let center = Vector3.zeros();
+            for(let vertex of this.vertices)
+                center = center.add(vertex),
+            this.center_ = center.divScalar(this.vertices.length);
+        }
+
+        computeBoundingBox() {
+
+        }
+
 		computePolygons() {
 			this.clearGeometry();
 
@@ -124,6 +140,8 @@ module Yaqe.Level {
 			for(let face of this.faces)
 				face.sortCounterClockwise();
 			this.extractEdges();
+            this.computeBoundingBox();
+            this.computeCenter();
 		}
 
         modifyVerticesApplying(transform: (Vector3) => Vector3) {

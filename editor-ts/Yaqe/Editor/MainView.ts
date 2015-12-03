@@ -34,6 +34,8 @@ module Yaqe.Editor {
         private renderable: Rendering.Renderable;
         private mapRenderer: MapRenderer;
         private lastMousePosition: Vector2;
+        private primaryGridSize_: number;
+        private secondaryGridSize_: number;
 
         constructor(canvas: HTMLCanvasElement) {
             // Create an empty map.
@@ -54,6 +56,10 @@ module Yaqe.Editor {
             this.lastMousePosition = new Vector2(-1, -1);
             this.selection_ = new BrushSelection();
             this.selectionClass = BrushSelection;
+
+            // Set the grid size.
+            this.primaryGridSize_ = 1.0;
+            this.secondaryGridSize_ = 0.1;
 
             // Load the shader
             this.loadShaders(() => {
@@ -305,8 +311,12 @@ module Yaqe.Editor {
         removeSelectedElements() {
         }
 
+        get selectionCenter() {
+            return this.selection.center;
+        }
+
         get currentPivot() {
-            return new Vector3();
+            return this.selectionCenter;
         }
 
         private registerCanvasEvents() {
@@ -380,6 +390,14 @@ module Yaqe.Editor {
         private onKeyUp(ev: KeyboardEvent) {
             if(this.activeView != null)
                 this.activeView.onKeyUp(this.lastMousePosition.sub(this.activeView.position), ev);
+        }
+
+        get primaryGridSize() {
+            return this.primaryGridSize_;
+        }
+
+        get secondaryGridSize() {
+            return this.secondaryGridSize_;
         }
     }
 }

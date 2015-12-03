@@ -1,4 +1,5 @@
 ﻿///<reference path='./Common.ts'/>
+///<reference path='./Complex.ts'/>
 ///<reference path='./Vector3.ts'/>
 ///<reference path='./Vector4.ts'/>
 
@@ -26,6 +27,14 @@ module Yaqe.Math3D
 
         static ones() {
             return new Vector2(1, 1);
+        }
+
+        asComplex() {
+            return new Complex(this.x, this.y);
+        }
+
+        asVector2() {
+            return this;
         }
 
         asVector3() {
@@ -62,6 +71,10 @@ module Yaqe.Math3D
 
         dot(other: Vector3) {
             return this.x*other.x + this.y*other.y;
+        }
+
+        normalized() {
+            return this.divScalar(this.length());
         }
 
         binaryWrite(output: Serialization.BinaryWriter) {

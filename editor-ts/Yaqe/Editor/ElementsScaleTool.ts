@@ -9,21 +9,20 @@ module Yaqe.Editor {
     import Matrix3 = Math3D.Matrix3;
     import Matrix4 = Math3D.Matrix4;
 
-    export class ElementsGrabTool extends CameraRelativeDragTool {
+    export class ElementsScaleTool extends WindowSpaceDragTool {
         private selection: Selection;
         private mementos: any[];
-        private pivot: Vector3;
-        private depthHint_: number;
+        private pivot: Vector2;
+        private initialPosition: Vector2;
+        private axis: Vector3;
 
-        depthHint() {
-            return this.depthHint_;
-        }
 
         begin(ev) {
             this.selection = this.mainView.selection.copy();
             this.mementos = this.selection.createMementos();
-            this.pivot = this.mainView.currentPivot;
-            this.depthHint_ = this.depthHintFor(this.view.camera, this.pivot);
+            this.pivot = this.view.worldToWindow(this.mainView.currentPivot);
+            this.initialPosition = this.mouseStartPosition.copy();
+            this.axis = this.view.camera.orientation.transformVector(new Vector3(0.0, 0.0, -1.0));
         }
 
         end(status) {
@@ -35,13 +34,11 @@ module Yaqe.Editor {
             }
         }
 
-        update3D(deltaVector: Vector3, ev) {
-            let snappedDelta = this.view.snapToGrid(deltaVector, ev.ctrlKey);
-            
-            this.selection.restoreFromMementos(this.mementos);
-            for(let el of this.selection.elements)
-                el.translateBy(snappedDelta);
+        update(mousePosition: Vector2, ev) {
+            // Restore the elements
+        	this.selection.restoreFromMementos(this.mementos);
         }
+
     }
 
 }

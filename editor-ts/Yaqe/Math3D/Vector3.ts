@@ -35,6 +35,10 @@ module Yaqe.Math3D
             return new Vector4(this.x, this.y, this.z, 0.0);
         }
 
+        asPosition4() {
+            return new Vector4(this.x, this.y, this.z, 1.0);
+        }
+
         negated() {
             return new Vector3(-this.x, -this.y, -this.z);
         }

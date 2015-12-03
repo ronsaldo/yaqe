@@ -243,6 +243,8 @@ module Yaqe.Editor {
                     return this.mainView.removeSelectedElements();
                 case 'G'.asKeyCode():
                     return this.grabToolStart(mousePosition, ev);
+                case 'R'.asKeyCode():
+                    return this.rotateToolStart(mousePosition, ev);
                 default:
                     // Do nothing.
                     break;
@@ -272,26 +274,53 @@ module Yaqe.Editor {
                 this.mainView.changeActiveView(this);
         }
 
-        normalizedPosition(windowPosition: Vector2) {
-            return new Vector2(windowPosition.x / this.size.x,  windowPosition.y / this.size.y)
+        windowToNormalized(windowPosition: Vector2) {
+            return new Vector2(windowPosition.x / this.size.x,  windowPosition.y / this.size.y);
         }
 
         normalizedToLocal(normalizedPosition: Vector2, depth: number) {
             return this.camera.localPointAtDistance(normalizedPosition, depth);
         }
 
+        normalizedToWindow(normalizedPosition: Vector2) {
+            return new Vector2(normalizedPosition.x * this.size.x,  normalizedPosition.y * this.size.y);
+        }
+
         windowToLocal(windowPosition: Vector2, depth: number) {
-            return this.normalizedToLocal(this.normalizedPosition(windowPosition), depth);
+            return this.normalizedToLocal(this.windowToNormalized(windowPosition), depth);
         }
 
         rayForWindowPosition(mousePosition: Vector2) {
-            return this.camera.worldRayAtPosition(this.normalizedPosition(mousePosition));
+            return this.camera.worldRayAtPosition(this.windowToNormalized(mousePosition));
+        }
+
+        worldToView(position: Vector3) {
+            return this.camera.viewMatrix.transformPosition(position);
+        }
+
+        worldToNormalized(position: Vector3) {
+            let view = this.worldToView(position);
+            let projected = this.camera.projectionMatrix.transformPosition4(view.asPosition4());
+            return new Vector2(projected.x / projected.w*0.5 + 0.5, projected.y / projected.w*0.5 + 0.5);
+        }
+
+        worldToWindow(position: Vector3) {
+            let normalized = this.worldToNormalized(position);
+            return this.normalizedToWindow(normalized)
+        }
+
+        get primaryGridSize() {
+            return this.mainView.primaryGridSize;
+        }
+
+        get secondaryGridSize() {
+            return this.mainView.secondaryGridSize;
         }
 
         snapToGrid(vector: Vector3, primary: boolean) {
             if(primary)
-                return vector.roundTo(1.0);
-            return vector.roundTo(0.1);
+                return vector.roundTo(this.primaryGridSize);
+            return vector.roundTo(this.secondaryGridSize);
         }
 
         addNewElement(mousePosition: Vector2, ev) {
@@ -299,6 +328,10 @@ module Yaqe.Editor {
 
         grabToolStart(mousePosition: Vector2, ev) {
             this.startDragOnKey(mousePosition, ev, new ElementsGrabTool());
+        }
+
+        rotateToolStart(mousePosition: Vector2, ev) {
+            this.startDragOnKey(mousePosition, ev, new ElementsRotateTool());
         }
 
     }

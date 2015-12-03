@@ -67,9 +67,13 @@ module Yaqe.Math3D
             this.z = input.readFloat32();
             this.w = input.readFloat32();
         }
-        
+
         closeTo(o: Vector4) {
             return this.x.closeTo(o.x) && this.y.closeTo(o.y) && this.z.closeTo(o.z) && this.w.closeTo(o.w);
+        }
+
+        toString() {
+            return '{x: ' + this.x + ', y: ' + this.y + ', z: ' + this.z + ', w: ' + this.w + '}';
         }
     }
 }

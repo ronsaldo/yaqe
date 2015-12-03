@@ -1,6 +1,9 @@
 interface Number {
 	closeTo(o: number): boolean;
     roundTo(quantum: number): number;
+
+    degreesToRadians(): number;
+    radiansToDegrees(): number;
 }
 
 module Yaqe.Math3D {
@@ -16,6 +19,18 @@ module Yaqe.Math3D {
     Object.defineProperty(Number.prototype, "roundTo", {
 		value: function(quantum: number) {
 			return Math.round(this/quantum) * quantum;
+		}
+	});
+
+    Object.defineProperty(Number.prototype, "degreesToRadians", {
+		value: function() {
+			return this * Math.PI / 180.0;
+		}
+	});
+
+    Object.defineProperty(Number.prototype, "radiansToDegrees", {
+		value: function() {
+			return this * 180.0 / Math.PI;
 		}
 	});
 
