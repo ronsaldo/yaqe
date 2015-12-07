@@ -156,6 +156,11 @@ module Yaqe.Level {
             this.invalidateModels();
         }
 
+        modifyVerticesNotRoundingApplying(transform: (Vector3) => Vector3) {
+            this.isRounding = false;
+            this.modifyVerticesApplying(transform)
+        }
+
         translateBy(delta: Vector3) {
             this.modifyVerticesApplying(vertex => vertex.add(delta));
         }
