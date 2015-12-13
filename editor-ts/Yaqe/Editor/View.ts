@@ -247,6 +247,8 @@ module Yaqe.Editor {
                     return this.rotateToolStart(mousePosition, ev);
                 case 'S'.asKeyCode():
                     return this.scaleToolStart(mousePosition, ev);
+                case 'E'.asKeyCode():
+                    return this.expandToolStart(mousePosition, ev);
                 default:
                     // Do nothing.
                     break;
@@ -342,6 +344,10 @@ module Yaqe.Editor {
 
         scaleToolStart(mousePosition: Vector2, ev) {
             this.startDragOnKey(mousePosition, ev, new ElementsScaleTool());
+        }
+
+        expandToolStart(mousePosition: Vector2, ev) {
+            this.startDragOnKey(mousePosition, ev, new ElementsExpandTool());
         }
 
     }
