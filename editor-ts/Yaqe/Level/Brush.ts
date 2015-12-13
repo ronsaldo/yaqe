@@ -2,6 +2,7 @@
 ///<reference path='../Math3D/Vector2.ts'/>
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Math3D/Plane.ts'/>
+///<reference path="../Math3D/AABox3.ts"/>
 ///<reference path='../Rendering/GeometryBuilder.ts'/>
 ///<reference path='../Rendering/StateTracker.ts'/>
 ///<reference path='./BrushFace.ts'/>
@@ -11,6 +12,7 @@
 module Yaqe.Level {
     import Vector3 = Math3D.Vector3;
     import Vector2 = Math3D.Vector2;
+    import AABox3 = Math3D.AABox3;
     import Color = Math3D.Color;
 	import Plane = Math3D.Plane;
     import Ray = Math3D.Ray;
@@ -30,6 +32,7 @@ module Yaqe.Level {
         isRounding: boolean;
         private selected_: boolean;
         private center_: Vector3;
+        private boundingBox_: AABox3;
 
 		constructor(faces : Array<BrushFace>, color : Color = Color.makeRandom(), isRounding: boolean = true) {
 			this.faces = faces;
@@ -104,6 +107,10 @@ module Yaqe.Level {
             return this.center_;
         }
 
+        get boundingBox() {
+            return this.boundingBox_;
+        }
+
         computeCenter() {
             let center = Vector3.zeros();
             for(let vertex of this.vertices)
@@ -112,7 +119,7 @@ module Yaqe.Level {
         }
 
         computeBoundingBox() {
-
+            this.boundingBox_ = AABox3.fromPoints(this.vertices);
         }
 
 		computePolygons() {

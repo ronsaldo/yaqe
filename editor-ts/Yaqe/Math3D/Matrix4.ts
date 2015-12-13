@@ -55,6 +55,26 @@ module Yaqe.Math3D
 			]);
 		}
 
+        static translation(v: Vector3)
+        {
+            return new Matrix4([
+                1.0, 0.0, 0.0, v.x,
+                0.0, 1.0, 0.0, v.y,
+                0.0, 0.0, 1.0, v.z,
+                0.0, 0.0, 0.0, 1.0
+            ]);
+        }
+
+        static scale(v: Vector3)
+        {
+            return new Matrix4([
+                v.x, 0.0, 0.0, 0.0,
+                0.0, v.y, 0.0, 0.0,
+                0.0, 0.0, v.z, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ]);
+        }
+
 		static frustumProjection(left: number, right: number, bottom: number, top: number, near: number, far: number)
 		{
 			return new Matrix4([

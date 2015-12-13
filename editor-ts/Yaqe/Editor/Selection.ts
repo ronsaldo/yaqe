@@ -1,9 +1,11 @@
 ///<reference path="../Level/BrushFace.ts"/>
+///<reference path="../Math3D/AABox3.ts"/>
 ///<reference path="../Math3D/Vector3.ts"/>
 
 module Yaqe.Editor {
     import BrushFace = Level.BrushFace;
     import Vector3 = Math3D.Vector3;
+    import AABox3 = Math3D.AABox3;
 
     export abstract class Selection {
         // TODO: Use a proper set
@@ -38,6 +40,11 @@ module Yaqe.Editor {
             }
 
             return center.divScalar(this.elements.length);
+        }
+
+        get boundingBox() {
+            let boxes = this.elements.map((element) => element.boundingBox)
+            return AABox3.fromBoxes(boxes)
         }
 
         abstract addFace(face: BrushFace);

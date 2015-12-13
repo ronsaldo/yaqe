@@ -245,6 +245,8 @@ module Yaqe.Editor {
                     return this.grabToolStart(mousePosition, ev);
                 case 'R'.asKeyCode():
                     return this.rotateToolStart(mousePosition, ev);
+                case 'S'.asKeyCode():
+                    return this.scaleToolStart(mousePosition, ev);
                 default:
                     // Do nothing.
                     break;
@@ -317,10 +319,14 @@ module Yaqe.Editor {
             return this.mainView.secondaryGridSize;
         }
 
-        snapToGrid(vector: Vector3, primary: boolean) {
+        gridSizeFor(primary: boolean) {
             if(primary)
-                return vector.roundTo(this.primaryGridSize);
-            return vector.roundTo(this.secondaryGridSize);
+                return this.primaryGridSize;
+            return this.secondaryGridSize;
+        }
+
+        snapToGrid(vector: Vector3, primary: boolean) {
+            return vector.roundTo(this.gridSizeFor(primary));
         }
 
         addNewElement(mousePosition: Vector2, ev) {
@@ -332,6 +338,10 @@ module Yaqe.Editor {
 
         rotateToolStart(mousePosition: Vector2, ev) {
             this.startDragOnKey(mousePosition, ev, new ElementsRotateTool());
+        }
+
+        scaleToolStart(mousePosition: Vector2, ev) {
+            this.startDragOnKey(mousePosition, ev, new ElementsScaleTool());
         }
 
     }
