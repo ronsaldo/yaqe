@@ -1,6 +1,7 @@
 interface Number {
 	closeTo(o: number): boolean;
     roundTo(quantum: number): number;
+    sign(): number;
 
     degreesToRadians(): number;
     radiansToDegrees(): number;
@@ -31,6 +32,15 @@ module Yaqe.Math3D {
     Object.defineProperty(Number.prototype, "radiansToDegrees", {
 		value: function() {
 			return this * 180.0 / Math.PI;
+		}
+	});
+
+    Object.defineProperty(Number.prototype, "sign", {
+		value: function() {
+            if(this < 0)
+                return -1;
+            else
+                return 1;
 		}
 	});
 

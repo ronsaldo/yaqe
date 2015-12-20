@@ -286,12 +286,22 @@ module Yaqe.Editor {
             return this.camera.localPointAtDistance(normalizedPosition, depth);
         }
 
+        normalizedToWorld(normalizedPosition: Vector2, depth: number) {
+            let local = this.normalizedToLocal(normalizedPosition, depth);
+            let transform = this.camera.modelMatrix;
+            return transform.transformPosition(local);
+        }
+
         normalizedToWindow(normalizedPosition: Vector2) {
             return new Vector2(normalizedPosition.x * this.size.x,  normalizedPosition.y * this.size.y);
         }
 
         windowToLocal(windowPosition: Vector2, depth: number) {
             return this.normalizedToLocal(this.windowToNormalized(windowPosition), depth);
+        }
+
+        windowToWorld(windowPosition: Vector2, depth: number) {
+            return this.normalizedToWorld(this.windowToNormalized(windowPosition), depth);
         }
 
         rayForWindowPosition(mousePosition: Vector2) {

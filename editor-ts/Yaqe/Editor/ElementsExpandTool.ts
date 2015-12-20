@@ -15,9 +15,13 @@ module Yaqe.Editor {
         private mementos: any[];
         private worldPivot: Vector3;
         private pivot: Vector2;
-        private initialPosition: Vector2;
+        private initialPosition: Vector3;
         private boundingBox: AABox3;
-        private axis: Vector3;
+        private depthHint_: number;
+
+        depthHint() {
+            return this.depthHint_;
+        }
 
         begin(ev) {
             this.selection = this.mainView.selection.copy();
@@ -25,8 +29,8 @@ module Yaqe.Editor {
             this.mementos = this.selection.createMementos();
             this.worldPivot = this.mainView.currentPivot;
             this.pivot = this.view.worldToWindow(this.worldPivot);
-            this.initialPosition = this.mouseStartPosition.copy();
-            this.axis = this.view.camera.orientation.transformVector(new Vector3(0.0, 0.0, -1.0));
+            this.depthHint_ = this.depthHintFor(this.view.camera, this.worldPivot)
+            this.initialPosition = this.view.windowToWorld(this.mouseStartPosition, this.depthHint());
         }
 
         end(status) {
@@ -38,45 +42,86 @@ module Yaqe.Editor {
             }
         }
 
-        computeSnappedScale(scale: number, coarse: boolean) {
-            // Snap the scale
-            let gridSize = this.view.gridSizeFor(coarse);
-            let extent = this.boundingBox.extent;
-            let currentSize = Number.POSITIVE_INFINITY;
-            if(extent.x < currentSize && this.changeDirection.x.closeTo(1))
-                currentSize = extent.x;
-            if(extent.y < currentSize && this.changeDirection.y.closeTo(1))
-                currentSize = extent.y;
-            if(extent.z < currentSize && this.changeDirection.z.closeTo(1))
-                currentSize = extent.z;
+        findVectorDirection(vector: Vector3) {
+            let ax = Math.abs(vector.x);
+            let ay = Math.abs(vector.y);
+            let az = Math.abs(vector.z);
+        	let bestValue = ax;
+        	let direction = new Vector3(1, 0, 0);
+            if(ay > bestValue) {
+                bestValue = ay;
+            	direction = new Vector3(0, 1, 0);
+            }
+            if(az > bestValue) {
+                bestValue = az;
+            	direction = new Vector3(0, 0, 1);
+            }
 
-            let snapSize = (scale * currentSize).roundTo(gridSize);
-            return snapSize / currentSize;
+        	return direction;
         }
 
-        computeScaleVector(scale: number) {
-            return this.changeDirection.mulScalar(scale);
+        computeScaleVector(scale: number, direction: Vector3) {
+            return new Vector3(this.scaleFactor(scale, direction.x), this.scaleFactor(scale, direction.y), this.scaleFactor(scale, direction.z))
+        }
+
+        scaleFactor(scale: number, factor: number) {
+            if(factor.closeTo(1))
+                return scale;
+            return 1;
+        }
+
+        computeScaleTransform(scale: number, direction: Vector3, sign: number) {
+            let scaleVector = this.computeScaleVector(scale, direction);
+            let oldFixPoint;
+            if(sign < 0)
+                oldFixPoint = this.boundingBox.max;
+            else
+                oldFixPoint = this.boundingBox.min;
+
+            let newFixPoint = oldFixPoint.mulElements(scaleVector);
+            let translation = oldFixPoint.sub(newFixPoint);
+            return new Matrix4([
+                scaleVector.x, 0, 0, translation.x,
+                0, scaleVector.y, 0, translation.y,
+                0, 0, scaleVector.z, translation.z,
+                0, 0, 0, 1
+            ]);
         }
 
         update(mousePosition: Vector2, ev) {
+    	    let worldMousePosition = this.view.windowToWorld(mousePosition, this.depthHint());
+            let deltaVector = worldMousePosition.sub(this.initialPosition);
+        	let pivotDeltaVector = worldMousePosition.sub(this.worldPivot);
+
+        	// Compute the expansion direction
+            let expansionDirection = this.changeDirection;
+            if(this.changeDirection.x + this.changeDirection.y + this.changeDirection.z > 1) {
+                expansionDirection = this.findVectorDirection(pivotDeltaVector)
+            }
+
+            console.log(expansionDirection);
+        	let changeSign = pivotDeltaVector.dot(expansionDirection).sign();
+
+        	// Compute the amount to add/subtract
+        	let sizeExtra = deltaVector.dot(expansionDirection) * changeSign;
+
+            if(ev.ctrlKey) {
+                sizeExtra = sizeExtra.roundTo(this.mainView.primaryGridSize);
+            }
+            else {
+                sizeExtra = sizeExtra.roundTo(this.mainView.secondaryGridSize);
+            }
+
         	// Compute the scale
-            let initialDist = this.initialPosition.sub(this.pivot).length();
-        	let newDist = mousePosition.sub(this.pivot).length();
-        	let scale = Math.max(newDist / initialDist,  0.001);
+        	let currentSize = this.boundingBox.extent.dot(expansionDirection);
+            let newSize = Math.max((currentSize + sizeExtra), 0.001);
+            let scale = newSize / currentSize;
+        	let scaleTransform = this.computeScaleTransform(scale, expansionDirection, changeSign);
 
-        	// Snap the scale
-            scale = this.computeSnappedScale(scale, ev.ctrlKey);
-        	let scaleVector = this.computeScaleVector(scale);
-
-            // Restore the elements
+        	// Apply the scale
         	this.selection.restoreFromMementos(this.mementos);
-
-            // Build the transformation matrix.
-            let matrix = Matrix4.translation(this.worldPivot).mul(Matrix4.scale(scaleVector).mul(Matrix4.translation(this.worldPivot.negated())))
-
-            // Apply the scale
-            for(let el of this.selection.elements)
-                el.modifyVerticesNotRoundingApplying((vertex) => matrix.transformPosition(vertex))
+            for(let element of this.selection.elements)
+                element.modifyVerticesApplying(vert => scaleTransform.transformPosition(vert));
         }
 
     }
