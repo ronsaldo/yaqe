@@ -45,4 +45,25 @@ module Yaqe.Editor {
             this.view.camera.position = this.initialPosition.add(deltaVector);
         }
     }
+
+
+    export class CameraRotateTool extends WindowSpaceDragTool {
+        private lastPosition: Vector2;
+
+        begin(ev) {
+            this.lastPosition = this.mouseStartPosition.copy();
+
+        }
+
+        end(status) {
+            this.finish();
+        }
+
+        update(mousePosition: Vector2, ev) {
+            let delta = mousePosition.sub(this.lastPosition);
+            this.view.camera.orientationController.dragMouse(delta);
+            this.lastPosition = mousePosition.copy();
+        }
+
+    }
 }

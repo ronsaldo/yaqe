@@ -60,7 +60,6 @@ module Yaqe.Level {
             return false;
         }
 
-
 		static createPrism(extent: Vector3) {
 			let hw = extent.x / 2.0;
 			let hh = extent.y / 2.0;
@@ -224,7 +223,6 @@ module Yaqe.Level {
 				}
 			}
 		}
-
 
 		private intersectFaces(first: BrushFace, second: BrushFace, third: BrushFace) {
 			let intersection = first.plane.intersectionWithAndWith(second.plane, third.plane);
@@ -412,9 +410,10 @@ module Yaqe.Level {
                 return;
 
             let remaining : Brush = this;
+            let newRounding = this.isRounding && brush.isRounding;
             for(let face of brush.faces) {
                 if(this.intersectsWithFaceProperly(face)) {
-                    let clipResult = remaining.clipWithPlane(face.plane);
+                    let clipResult = remaining.clipWithPlane(face.plane, newRounding);
                     if(clipResult != null) {
                         result.push(clipResult[1])
                         remaining = clipResult[0]

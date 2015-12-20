@@ -9,7 +9,7 @@ module Yaqe.Rendering {
 	import Matrix3 = Math3D.Matrix3;
 	import Matrix4 = Math3D.Matrix4;
 	import Plane = Math3D.Plane;
-		
+
 	/**
 	 * An object that contains a position and an orientation in the space.
 	 */
@@ -17,13 +17,15 @@ module Yaqe.Rendering {
 	{
 		position: Vector3;
 		orientation: Matrix3;
-		
+        orientationController: OrientationController;
+
 		constructor(position: Vector3 = Vector3.zeros(), orientation: Matrix3 = Matrix3.identity())
 		{
 			this.position = position;
 			this.orientation = orientation;
+            this.orientationController = new NullOrientationController(this);
 		}
-		
+
 		/**
 		 * Gets the model matrix for this object.
 		 */
@@ -31,7 +33,7 @@ module Yaqe.Rendering {
 		{
 			return Matrix4.fromMatrix3AndVector3(this.orientation, this.position);
 		}
-		
+
 		/**
 		 * Gets the view matrix for this object.
 		 */

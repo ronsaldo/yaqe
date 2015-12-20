@@ -35,7 +35,6 @@ module Yaqe.Editor {
 		size: Vector2;
         stateTracker: StateTracker;
         camera: Camera;
-
         renderMode: ViewRenderMode;
         gridTransform: Matrix3;
         gridCameraDirection: Vector3;
@@ -50,6 +49,7 @@ module Yaqe.Editor {
             this.mainView_ = mainView;
             this.stateTracker = stateTracker;
             this.camera = new Camera();
+            this.camera.orientationController = new Rendering.HeadOrientationController(this.camera);
             this.isOrthographic_ = true;
             this.renderMode = ViewRenderMode.Wireframe;
             this.gridTransform = Matrix3.identity();
@@ -158,8 +158,10 @@ module Yaqe.Editor {
         mouseButtonDownAction(mousePosition: Vector2, ev: MouseEvent) {
             if(ev.button == MouseButton.Left)
                 this.startSelectionTool(mousePosition, ev);
-            else if(ev.button == MouseButton.Right)
+            else if(ev.button == MouseButton.Right && ev.shiftKey && !ev.altKey)
                 this.startCameraDragTool(mousePosition, ev);
+            else if(ev.button == MouseButton.Right && ev.shiftKey && ev.altKey)
+                this.startCameraRotateTool(mousePosition, ev);
         }
 
         captureMouse() {
@@ -186,6 +188,10 @@ module Yaqe.Editor {
 
         private startCameraDragTool(mousePosition: Vector2, ev: MouseEvent) {
             this.startDragOnMouse(mousePosition, ev, new CameraDragTool());
+        }
+
+        private startCameraRotateTool(mousePosition: Vector2, ev: MouseEvent) {
+            this.startDragOnMouse(mousePosition, ev, new CameraRotateTool());
         }
 
         startDragOnMouse(mousePosition: Vector2, ev: MouseEvent, dragTool: DragTool) {
