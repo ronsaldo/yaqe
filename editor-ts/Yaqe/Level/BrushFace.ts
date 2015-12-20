@@ -38,6 +38,18 @@ module Yaqe.Level {
             return copy;
         }
 
+        isEntity() {
+            return false;
+        }
+
+        isBrush() {
+            return false;
+        }
+
+        isBrushFace() {
+            return true;
+        }
+
 		clearGeometry() {
 			this.indices = []
 		}
@@ -60,6 +72,34 @@ module Yaqe.Level {
 		getVertices() {
 			return this.indices.map((index) => this.brush.vertices[index]);
 		}
+
+        getEdges() {
+			let edges = [];
+            let N = this.indices.length;
+            for(let i = 0; i < this.indices.length; ++i) {
+                edges.push([i, (i + 1) % N])
+            }
+            return edges;
+		}
+
+        sideOfPlane(plane: Plane) {
+            let front = false;
+            let back = false;
+            let vertices = this.getVertices();
+            for(let vertex of vertices) {
+                if(plane.inFront(vertex))
+                    front = true;
+                else
+                    back = true;
+            }
+
+            if(front && back)
+                return 0;
+            else if(front)
+                return 1;
+            else
+                return -1;
+        }
 
 		sortCounterClockwise() {
 			let center = this.computeCenter();
@@ -99,6 +139,14 @@ module Yaqe.Level {
 
         invalidateModels() {
             this.brush.invalidateModels();
+        }
+
+        get entity() {
+            return this.brush.entity;
+        }
+
+        get parent() {
+            return this.brush;
         }
 
         get selected() {

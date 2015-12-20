@@ -85,6 +85,22 @@ module Yaqe.Math3D {
                 min.z <= omin.z && omax.z <= max.z;
         }
 
+        intersectsWithBox(box: AABox3) {
+            return !this.isOutside(box);
+        }
+
+        isOutside(box: AABox3) {
+            let smin = this.min;
+            let smax = this.max;
+            let omin = box.min;
+            let omax = box.max;
+
+            return omax.x < smin.x || omin.x > smax.x ||
+                omax.y < smin.y || omin.y > smax.y ||
+                omax.z < smin.z || omin.z > smax.z;
+
+        }
+
         toString() {
             return '{center: ' + this.center.toString() + ', halfExtent: ' + this.halfExtent.toString() + '}';
         }

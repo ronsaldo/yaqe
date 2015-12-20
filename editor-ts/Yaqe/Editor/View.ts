@@ -5,6 +5,7 @@
 ///<reference path='../Rendering/Vertex.ts'/>
 ///<reference path='../Rendering/Renderable.ts'/>
 ///<reference path='../Level/Map.ts'/>
+///<reference path='../Level/Brush.ts'/>
 ///<reference path='./MainView.ts'/>
 ///<reference path='./DragTool.ts'/>
 ///<reference path="./HtmlEvents.ts"/>
@@ -19,6 +20,7 @@ module Yaqe.Editor {
     import Matrix3 = Math3D.Matrix3;
     import Matrix4 = Math3D.Matrix4;
     import Color = Math3D.Color;
+    import Brush = Level.Brush;
 
     export enum ViewRenderMode {
         Wireframe = 0,
@@ -236,6 +238,16 @@ module Yaqe.Editor {
                     break;
                 }
             }
+            else if(!ev.altKey && !ev.shiftKey && ev.ctrlKey) {
+                switch(keyCode)
+                {
+                case 'S'.asKeyCode():
+                    return this.mainView.subtractSelectedBrushes();
+                default:
+                    // Do nothing.
+                    break;
+                }
+            }
             else if(!ev.altKey && !ev.shiftKey && !ev.ctrlKey) {
                 switch(keyCode)
                 {
@@ -342,6 +354,11 @@ module Yaqe.Editor {
         }
 
         addNewElement(mousePosition: Vector2, ev) {
+        	let brush = Brush.createPrism(new Vector3(1,1,1));
+            this.currentMap.mapEntity.addBrush(brush);
+            let selection = new BrushSelection();
+            selection.add(brush);
+            this.mainView.selection = selection;
         }
 
         grabToolStart(mousePosition: Vector2, ev) {

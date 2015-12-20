@@ -1,12 +1,15 @@
 ///<reference path='../Math3D/Color.ts'/>
+///<reference path='../Math3D/AABox3.ts'/>
 ///<reference path='../Math3D/Vector2.ts'/>
 ///<reference path='../Math3D/Vector3.ts'/>
 ///<reference path='../Math3D/Matrix3.ts'/>
 ///<reference path='../Math3D/Plane.ts'/>
 ///<reference path='../Math3D/Ray.ts'/>
+///<reference path='../Editor/Selection.ts'/>
 ///<reference path='./Entity.ts'/>
 
 module Yaqe.Level {
+    import AABox3 = Math3D.AABox3;
     import Vector3 = Math3D.Vector3;
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
@@ -49,6 +52,33 @@ module Yaqe.Level {
             }
 
             return [bestDistance, bestFace];
+        }
+
+        findBrushesIntersectingBox(box: AABox3) {
+            let brushes = []
+            for(let entity of this.entities)
+                entity.findBrushesIntersectingBoxInto(box, brushes);
+            return brushes;
+        }
+
+        findBrushesIntersectingSelectedBrushesProperly(selection: Editor.Selection) {
+            let candidates = this.findBrushesIntersectingBox(selection.boundingBox);
+            return candidates.filter((brush: Brush) => {
+                for(let sbrush of selection.elements) {
+                    if(brush == sbrush)
+                        return false;
+                }
+
+                for(let sbrush of selection.elements) {
+                    console.log("compare ")
+                    console.log(brush)
+                    console.log(sbrush)
+                    if(brush.intersectsWithBrushProperly(sbrush))
+                        return true;
+                }
+
+                return false;
+            });
         }
 	}
 }

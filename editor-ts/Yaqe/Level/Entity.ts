@@ -1,3 +1,4 @@
+///<reference path='../Math3D/AABox3.ts'/>
 ///<reference path='../Math3D/Color.ts'/>
 ///<reference path='../Math3D/Vector2.ts'/>
 ///<reference path='../Math3D/Vector3.ts'/>
@@ -10,6 +11,7 @@
 ///<reference path='./Brush.ts'/>
 
 module Yaqe.Level {
+    import AABox3 = Math3D.AABox3;
     import Vector3 = Math3D.Vector3;
     import Vector2 = Math3D.Vector2;
     import Color = Math3D.Color;
@@ -48,17 +50,56 @@ module Yaqe.Level {
                 brush.entity = this;
 		}
 
+        isEntity() {
+            return true;
+        }
+
+        isBrush() {
+            return false;
+        }
+
+        isBrushFace() {
+            return false;
+        }
+
 		addBrush(brush: Brush) {
             brush.entity = this;
 			this.brushes.push(brush);
 			this.invalidateModels();
 		}
 
+        addBrushes(brushes: Brush[]) {
+            this.brushes = this.brushes.concat(brushes);
+            for(let brush of brushes)
+                brush.entity = this;
+            this.invalidateModels();
+        }
+
 		invalidateModels() {
 			this.wireModelMesh = null;
 			this.solidModelMesh = null;
 			this.texturedModelMesh = null;
 		}
+
+        findBrushesIntersectingBoxInto(box: AABox3, destination: Brush[]) {
+            for(let brush of this.brushes) {
+                if(brush.boundingBox.intersectsWithBox(box))
+                    destination.push(brush);
+            }
+        }
+
+        removeBrush(element: Brush) {
+            let index = this.brushes.indexOf(element);
+            if(index >= 0) {
+                this.brushes.splice(index, 1);
+                this.invalidateModels();
+            }
+        }
+
+        removeElement(element) {
+            if(element.isBrush())
+                this.removeBrush(element);
+        }
 
 		private buildWireModel(stateTracker: StateTracker) {
 			let builder = new GeometryBuilder<Rendering.StandardVertex3D> (Rendering.StandardVertex3D);

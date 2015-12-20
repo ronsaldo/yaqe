@@ -40,7 +40,6 @@ module Yaqe.Editor {
         constructor(canvas: HTMLCanvasElement) {
             // Create an empty map.
             this.currentMap = Map.createEmpty();
-            this.currentMap.mapEntity.addBrush(Brush.createPrism(new Vector3(1.0, 1.0, 1.0))),
 
             // Create the rendering context.
             this.canvas = canvas;
@@ -309,6 +308,9 @@ module Yaqe.Editor {
         }
 
         removeSelectedElements() {
+            for(let element of this.selection.elements)
+                element.parent.removeElement(element);
+            this.selection = new this.selectionClass;
         }
 
         get selectionCenter() {
@@ -398,6 +400,23 @@ module Yaqe.Editor {
 
         get secondaryGridSize() {
             return this.secondaryGridSize_;
+        }
+
+        subtractSelectedBrushes() {
+            console.log("Subtract selected");
+            if(!this.selection.isBrushSelection())
+                return;
+
+            let affectedBrushes = this.currentMap.findBrushesIntersectingSelectedBrushesProperly(this.selection);
+            console.log(affectedBrushes);
+            for(let affected of affectedBrushes) {
+                for(let brush of this.selection.elements) {
+                    let newBrushes = affected.subtractBrush(brush);
+                    let entity = brush.entity;
+                    entity.removeBrush(affected);
+                    entity.addBrushes(newBrushes);
+                }
+            }
         }
     }
 }

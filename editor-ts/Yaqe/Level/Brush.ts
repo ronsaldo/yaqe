@@ -48,6 +48,19 @@ module Yaqe.Level {
 				this.computePolygons();
 		}
 
+        isEntity() {
+            return false;
+        }
+
+        isBrush() {
+            return true;
+        }
+
+        isBrushFace() {
+            return false;
+        }
+
+
 		static createPrism(extent: Vector3) {
 			let hw = extent.x / 2.0;
 			let hh = extent.y / 2.0;
@@ -79,6 +92,10 @@ module Yaqe.Level {
             this.isRounding = memento.isRounding;
             this.faces = memento.faces.map(face => face.copy())
             this.computePolygons();
+        }
+
+        get parent() {
+            return this.entity;
         }
 
         get selected() {
@@ -272,6 +289,179 @@ module Yaqe.Level {
             }
 
             return true;
+        }
+
+        containsPointInside(point: Vector3) {
+            for(let face of this.faces) {
+                if(!face.plane.isBehind(point))
+                    return false;
+            }
+
+            return true;
+        }
+
+        containsPoint(point: Vector3) {
+            for(let face of this.faces) {
+                if(face.plane.inFront(point))
+                    return false;
+            }
+
+            return true;
+        }
+
+        intersectsWithEdgeProperly(start: Vector3, end: Vector3) {
+            if(start.closeTo(end))
+                return this.containsPointInside(start);
+            if(this.containsPointInside(start) || this.containsPointInside(end))
+                return true;
+
+            for(let face of this.faces) {
+                let intersection = face.plane.intersectWithSegment(start, end);
+                let inside = true;
+                if(intersection != null) {
+                    if(this.isPointBehindOtherFaces(intersection, face))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        intersectsWithBrushProperly(brush: Brush) {
+            // Make sure we don't share a face.
+            for(let myface of this.faces) {
+                let plane = myface.plane.negated();
+                for(let face of brush.faces) {
+                    if(face.plane.closeTo(plane))
+                        return false;
+                }
+            }
+
+            return this.intersectsWithBrushProperlyInternal(brush) || brush.intersectsWithBrushProperlyInternal(this);
+        }
+
+        intersectsWithFaceProperly(testFace: BrushFace) {
+            let reversedPlane = testFace.plane.negated();
+            for(let myFace of this.faces) {
+                if(myFace.plane.closeTo(testFace.plane) || myFace.plane.closeTo(reversedPlane))
+                    return false;
+            }
+
+            for(let vertex of testFace.getVertices()) {
+                if(this.containsPointInside(vertex))
+                    return true;
+            }
+
+            for(let edge of testFace.getEdges()) {
+                let first = testFace.vertexAt(edge[0]);
+                let second = testFace.vertexAt(edge[1]);
+                if(this.intersectsWithEdgeProperly(first, second))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private intersectsWithBrushProperlyInternal(brush: Brush) {
+            for(let vertex of this.vertices) {
+                if(brush.containsPointInside(vertex))
+                    return true;
+            }
+
+            for(let edge of this.edges) {
+                let first = this.vertices[edge[0]];
+                let second = this.vertices[edge[1]];
+                if(brush.intersectsWithEdgeProperly(first, second))
+                    return true;
+            }
+
+            return false;
+        }
+
+        intersectsWithPlane(plane: Plane) {
+            let front = false;
+            let back = false;
+            for(let vertex of this.vertices) {
+                if(plane.inFront(vertex))
+                    front = true;
+                else
+                    back = true;
+                if(front && back)
+                    return true;
+            }
+
+            return false;
+        }
+
+        containsBrush(brush: Brush)  {
+            for(let vertex of brush.vertices) {
+                if(!this.containsPoint(vertex))
+                    return false;
+            }
+            return true;
+        }
+
+        subtractBrush(brush: Brush) {
+            let result = []
+            this.subtractBrushInto(brush, result);
+            return result;
+        }
+
+        subtractBrushInto(brush: Brush, result: Brush[]) {
+            if(brush.containsBrush(this))
+                return;
+
+            let remaining : Brush = this;
+            for(let face of brush.faces) {
+                if(this.intersectsWithFaceProperly(face)) {
+                    let clipResult = remaining.clipWithPlane(face.plane);
+                    if(clipResult != null) {
+                        result.push(clipResult[1])
+                        remaining = clipResult[0]
+                    }
+                }
+            }
+
+        	// Check if nothing was subtracted.
+            if(result.length == 0)
+                result.push(this)
+        }
+
+        clipWithPlane(plane: Plane, rounding: boolean = false) {
+            let negatedPlane = plane.negated();
+            for(let face of this.faces) {
+                if(face.plane.closeTo(plane) || face.plane.closeTo(negatedPlane))
+                    return null;
+            }
+
+            if(!this.intersectsWithPlane(plane))
+                return null;
+
+            let frontFaces = []
+            let backFaces = []
+            for(let face of this.faces) {
+                let side = face.sideOfPlane(plane);
+                console.log(side);
+                if(side == 0) {
+                    frontFaces.push(face.copy());
+                    backFaces.push(face.copy());
+                }
+                else if(side < 0) {
+                    backFaces.push(face.copy());
+                }
+                else {
+                    frontFaces.push(face.copy());
+                }
+            }
+
+            this.assert(frontFaces.length != 0)
+            this.assert(backFaces.length != 0)
+            backFaces.push(new BrushFace(plane));
+            frontFaces.push(new BrushFace(negatedPlane));
+
+            let backBrush = new Brush(backFaces, Color.makeRandom(), rounding);
+            let frontBrush = new Brush(frontFaces, Color.makeRandom(), rounding);
+            return [ backBrush , frontBrush ]
         }
 	}
 }

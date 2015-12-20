@@ -29,6 +29,33 @@ module Yaqe.Math3D {
             return this.pointDistance(point) < 0
         }
 
+        negated() {
+            return new Plane(this.normal.negated(), -this.distance);
+        }
+
+        closeTo(plane: Plane) {
+            return this.normal.closeTo(plane.normal) && this.distance.closeTo(plane.distance);
+        }
+
+        intersectWithSegment(startPoint: Vector3, endPoint: Vector3) {
+            let startFront = this.inFront(startPoint);
+            let endFront = this.inFront(endPoint);
+
+            // Check for the existence of the intersection.
+	        if(startFront == endFront)
+                return null;
+
+	        // Compute the intersection point.
+        	let dir = endPoint.sub(startPoint);
+            let n = this.normal;
+        	let den = dir.dot(n);
+            if(den.closeTo(0))
+                return null;
+
+            let t = (this.distance - startPoint.dot(n)) / den;
+        	return startPoint.add(dir.mulScalar(t))
+        }
+
         intersectionWithAndWith(second: Plane, third: Plane) {
             let first = this;
             let n1 = first.normal;
